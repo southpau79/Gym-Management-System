@@ -28,7 +28,8 @@ public class Login extends JFrame {
     /**
      * Launch the application.
      */
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -189,10 +190,9 @@ public class Login extends JFrame {
         btnRegister.addActionListener(e ->
         {
             dispose();
-            /*
-            UsernameAvailablility obj = new UsernameAvailablility();
-            obj.main();
-           */
+            NewUserRegister obj = new NewUserRegister();
+            obj.main(null);
+
         });
         contentPane.add(btnRegister);
         label = new JLabel("");

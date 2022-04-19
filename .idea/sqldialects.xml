@@ -4,5 +4,6 @@
     <file url="file://$PROJECT_DIR$/DB Scripts/Table Creation/tbllogin.sql" dialect="OracleSqlPlus" />
     <file url="file://$PROJECT_DIR$/DB Scripts/Table Creation/tbluser_phone_number.sql" dialect="OracleSqlPlus" />
     <file url="file://$PROJECT_DIR$/DB Scripts/Table Creation/tblusers.sql" dialect="OracleSqlPlus" />
+    <file url="PROJECT" dialect="Oracle" />
   </component>
 </project>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/DB Scripts/Table Creation/tbllogin.sql" dialect="OracleSqlPlus" />
+    <file url="file://$PROJECT_DIR$/DB Scripts/Table Creation/tbluser_phone_number.sql" dialect="OracleSqlPlus" />
+    <file url="file://$PROJECT_DIR$/DB Scripts/Table Creation/tblusers.sql" dialect="OracleSqlPlus" />
+  </component>
+</project>

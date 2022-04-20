@@ -195,6 +195,17 @@ public class GetBasicDetails
                     e.consume();
             }
         });
+
+        // Listener to check if the Email is valid or not by calling the function isValidEmail()
+        email1.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if(!isValidEmailAddress(email1.getText()))
+                    email1.setBorder(BorderFactory.createLineBorder(Color.red));
+                else
+                    email1.setBorder(BorderFactory.createLineBorder(Color.green));
+            }
+        });
         f.add(email1);
 
         // Creating the Labels and TextFields for Door Number
@@ -362,16 +373,11 @@ public class GetBasicDetails
             if (fname1.getText().isEmpty() || lname1.getText().isEmpty() || age1.getText().isEmpty()
                     || email1.getText().isEmpty() || doorno1.getText().isEmpty() || strname1.getText().isEmpty() || city1.getText().isEmpty()
                     || pincode1.getText().isEmpty() || state1.getText().isEmpty())
-            {
                 // Show the fields that are empty
                 JOptionPane.showMessageDialog(f, "Please fill all the fields!");
 
-            }
             // If all are filled then add the data into the database
             else {
-                // Email Validation
-                if (!email1.getText().contains("@") || !email1.getText().contains("."))
-                    JOptionPane.showMessageDialog(f, "Please enter a valid email!");
                     // Invalid age
                 if (Integer.parseInt(age1.getText()) > 100)
                     JOptionPane.showMessageDialog(f, "Age must be within than 100!");
@@ -464,6 +470,22 @@ public class GetBasicDetails
         f.setSize(1600,800);
         f.setLayout(null);
         f.setVisible(true);
+    }
+
+    //Method to validate if there exist an actual email address
+    public boolean isValidEmailAddress(String email) {
+        String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
+        java.util.regex.Matcher m = p.matcher(email);
+        return m.matches();
+    }
+
+    //Method to validate if there exist an actual phone number
+    public boolean isValidPhoneNumber(String phone) {
+        String ePattern = "^[0-9]{10}$";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
+        java.util.regex.Matcher m = p.matcher(phone);
+        return m.matches();
     }
 
     // Main Method

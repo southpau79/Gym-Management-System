@@ -1,14 +1,72 @@
 package Login;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 
 public class GetLoginInfo
 {
+
+    public static void main(String[] args) {
+        new GetLoginInfo();
+    }
+
+// Method that will indicate the password strength on  a ProgressBar
+private static int calculatePasswordStrength(@NotNull String password, JProgressBar progressBar) {
+
+    //total score of password
+    int iPasswordScore = 0;
+
+    if (password.length() < 8)
+        return 0;
+    else if (password.length() >= 10)
+        iPasswordScore += 20;
+    else
+        iPasswordScore += 10;
+
+    //if it contains one digit, add 2 to total score
+    if (password.matches("(?=.*[0-9]).*"))
+        iPasswordScore += 20;
+
+    //if it contains one lower case letter, add 2 to total score
+    if (password.matches("(?=.*[a-z]).*"))
+        iPasswordScore += 20;
+
+    //if it contains one upper case letter, add 2 to total score
+    if (password.matches("(?=.*[A-Z]).*"))
+        iPasswordScore += 20;
+
+    //if it contains one special character, add 2 to total score
+    if (password.matches("(?=.*[~!@#$%^&*()_-]).*"))
+        iPasswordScore += 20;
+
+    // Set it to the progress bar
+    progressBar.setValue(iPasswordScore);
+    return iPasswordScore;
+}
+
+    // Create a method to get the role id
+    public static String getRoleID(String roleName) {
+        String roleID = "";
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
+            PreparedStatement pst;
+            pst = connection.prepareStatement("select ROLE_ID from TBLROLES where ROLE_NAME=?");
+            pst.setString(1, roleName);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                roleID = rs.getString(1);
+            }
+            connection.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return roleID;
+    }
+
     public GetLoginInfo()
     {
         // Create a new frame
@@ -29,7 +87,7 @@ public class GetLoginInfo
         JPasswordField passwordField, passwordField1;
 
         // Create a JLabel with the text "The Username should be atleast 6 characters long and should not be a email address"
-        JLabel username_label = new JLabel("     The Username should be atleast 6 characters long and at maximum 10 characters long. " +
+        JLabel username_label = new JLabel("     The Username should be atleast 6 characters long and at maximum 15 characters long. " +
                 "It should not be a email address format");
         username_label.setBounds(80,70,1200,50);
         username_label.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
@@ -45,34 +103,32 @@ public class GetLoginInfo
         username_field = new JTextField();
         username_field.setBounds(600, 173, 200, 25);
 
-        // KeyListener for allowing only 10 characters in the username field
+        // KeyListener for checking if username is entered on pressing the check button
         username_field.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
-                // Check if the character typed is not @ and .
-                if((e.getKeyChar() == '@' || e.getKeyChar() == '.')) {
-                    e.consume();
-                }
-                if (username_field.getText().length() >= 10)
-                    e.consume();
-            }});
-
-
-        // KeyListener for displaying a message if the username field is empty and the user clicks on the Check button
-        username_field.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     if (username_field.getText().length() == 0) {
                         JOptionPane.showMessageDialog(null, "Please enter a username");
                     }
+                }
+            }});
+
+        // Listener for the username field to allow only 10 characters
+        username_field.addKeyListener(new KeyAdapter()
+        {
+            public void keyTyped(KeyEvent e)
+            {
+                if (username_field.getText().length() >= 15)
+                {
+                    e.consume();
                 }
             }
         });
         f.add(username_field);
 
         // Create label with "enter Strong Password Constraints" left side of the password label
-        JLabel password_constraints = new JLabel("Enter Password with at-least 8 characters with 1 uppercase, " +
-                "1 lowercase, 1 digit and 1 special character");
-        password_constraints.setBounds(100, 70, 870, 80);
+        JLabel password_constraints = new JLabel("  Use a variety of characters including letters, numbers, symbols, and upper and lower case. ");
+        password_constraints.setBounds(100, 70, 800, 80);
         password_constraints.setFont(new Font("Calibri", Font.BOLD, 20));
         // Add colour to the label to #028A0F
         password_constraints.setForeground(new Color(2, 138, 15));
@@ -86,22 +142,45 @@ public class GetLoginInfo
         password.setBounds(400, 200, 200, 80);
         password.setFont(new Font("Calibri", Font.ITALIC, 22));
         f.add(password);
+
         passwordField = new JPasswordField();
+        // Set the text colour to #ec3b83
+        passwordField.setForeground(new Color(236, 59, 131));
         passwordField.setBounds(600, 223, 200, 25);
         // Display the dialog box if the length of the password is less than 10
         passwordField.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
-                if (String.valueOf(passwordField.getPassword()).length() >= 10)
+                if (String.valueOf(passwordField.getPassword()).length() >= 30)
                     e.consume();
             }
         });
 
-        // When types the passsword, call the method passwordStrength()
+        // Code to display the password strength on a ProgressBar
+        JProgressBar progressBar = new JProgressBar();
+        progressBar.setBounds(200, 225, 100, 20);
+        progressBar.setStringPainted(true);
+        progressBar.setForeground(new Color(2, 138, 15));
+        progressBar.setValue(0);
+        progressBar.setString("");
+        progressBar.setVisible(false);
+        f.add(progressBar);
+
+        //JLabel to display Password Strength
+        JLabel password_strength = new JLabel("Password Strength: ");
+        password_strength.setBounds(20, 225, 150, 20);
+        password_strength.setFont(new Font("Calibri", Font.ITALIC, 18));
+        password_strength.setVisible(false);
+        f.add(password_strength);
+
+        // Call the method to check the strength of the password
         passwordField.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
-                passwordStrength(passwordField);
+                progressBar.setVisible(true);
+                password_strength.setVisible(true);
+                calculatePasswordStrength(String.valueOf(passwordField.getPassword()), progressBar);
             }
         });
+
         // When the user focuses on the password field, display the password_constraints label
         passwordField.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent e) {
@@ -121,8 +200,13 @@ public class GetLoginInfo
         passwordField1.setBounds(600,273,200,25);
         passwordField1.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
-                if (String.valueOf(passwordField.getPassword()).length() >= 10)
+                if (String.valueOf(passwordField1.getPassword()).length() >= 30)
                     e.consume();
+                // if password field is in focus
+                if (passwordField1.isFocusOwner()) {
+                    progressBar.setVisible(false);
+                    password_strength.setVisible(false);
+                }
             }
         });
 
@@ -182,26 +266,16 @@ public class GetLoginInfo
         JComboBox roleList = new JComboBox (role_options);
         roleList.setBounds(600,320,200,25);
 
-        // Display dialog box if the user selects "Please Select" itself
-        roleList.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (roleList.getSelectedIndex() == 0) {
-                    JOptionPane.showMessageDialog(null, "Please select a role from the list");
-                }
-            }
-        });
     f.add(roleList);
 
         // To add a button to display password when the user clicks on it
         JButton show_password = new JButton("Show Password");
         show_password.setBounds(850, 223, 150, 25);
+        // When the user clicks on the button, then display the password
         show_password.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (passwordField.getEchoChar() == '*') {
-                    passwordField.setEchoChar((char) 0);
-                } else {
-                    passwordField.setEchoChar('*');
-                }
+                passwordField.setEchoChar((char)0);
+                passwordField1.setEchoChar((char)0);
             }
         });
         f.add(show_password);
@@ -209,30 +283,42 @@ public class GetLoginInfo
         JButton Check = new JButton("Check Availability");
         Check.setBounds(850,168,170,25);
         f.add(Check);
-        Check.addActionListener(e ->
-        {
-            // Display dialog box if the username field is empty
-            if (username_field.getText().equals("")) {
-                JOptionPane.showMessageDialog(null, "Please enter a username");
-            } else {
-                String userName = username_field.getText();
-                String DB_URL = "jdbc:oracle:thin:@localhost:1521:orcl";
-                String PASS = "system";
-                String USER = "orcl";
-                try {
-                    Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
-                    PreparedStatement preparedStatement = (PreparedStatement) connection
-                            .prepareStatement("Select USER_NAME from TBLLOGIN where USER_NAME=?");
-                    preparedStatement.setString(1, userName);
-                    ResultSet resultSet = preparedStatement.executeQuery();
-                    if (resultSet.next()) {
-                        JOptionPane.showMessageDialog(null, "This Username(Email) is Already Registered with us ! , Choose Another One", "Username Failed", 2);
-                    } else
-                        JOptionPane.showMessageDialog(null, "Username Available... Create a password for your account", "Username Available", 1);
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
+       // Add a Listener to the check button to check if the username is available by selecting all the records from the tbluser table and display the dialog box if the username is not available
+        Check.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String username = username_field.getText();
+                if (username.equals(""))
+                    JOptionPane.showMessageDialog(null, "Please enter a username");
+                else {
+                        // Create a new connection to the database
+                        String userName = username_field.getText();
+                        try {
+                            Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
+                            PreparedStatement preparedStatement = (PreparedStatement) connection
+                                    .prepareStatement("Select USER_NAME from TBLLOGIN where USER_NAME = ?");
+                            preparedStatement.setString(1, userName);
+                            ResultSet resultSet = preparedStatement.executeQuery();
+                            if (resultSet.next()) {
+                                JOptionPane.showMessageDialog(null, "This Username is Already Taken! , Choose Another One", "Username Failed", 2);
+                                // Set the username field to blank
+                                username_field.setText("");
+                                // Set the UserName field to red border to indicate that the username is not available
+                                username_field.setBorder(BorderFactory.createLineBorder(Color.red));
+                                // Set the focus to the username field
+                                username_field.requestFocus();
+                            }
+
+                            else {
+                                JOptionPane.showMessageDialog(null, "Username Available... Create a password for your account", "Username Available", 1);
+                                // Set the Username textfield to green border if the username is available
+                                username_field.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+                                //Set the focus to the password field
+                                passwordField.requestFocus();
+                            }
+                        } catch (SQLException throwables) {
+                            throwables.printStackTrace();
+                        } ;
                 }
-                ;
             }
         });
 
@@ -241,42 +327,81 @@ public class GetLoginInfo
         f.add(Register);
         Register.addActionListener(e ->
         {
-            // Check if the Password Field is strong enough
-            if (!(String.valueOf(passwordField.getPassword()).matches(".*[A-Z].*") &&
-                    String.valueOf(passwordField.getPassword()).matches(".*[a-z].*") &&
-                    String.valueOf(passwordField.getPassword()).matches(".*[0-9].*") &&
-                    String.valueOf(passwordField.getPassword()).matches(".*[!@#$%^&*()_+].*"))) {
-                JOptionPane.showMessageDialog(null, "Password must contain at-least one Uppercase, Lowercase, Digit and Special Character");
-            }
-            else {
-                String Username = username_field.getText();
-                String passText = new String(passwordField.getPassword());
-                String passText_confirm = new String(passwordField1.getPassword());
-                String RollIDText = roleList.getSelectedItem().toString();
-                if (Username.trim().equals("") || passText.trim().equals("") || passText_confirm.trim().equals("") || RollIDText.trim().equals("Please Select"))
-                    JOptionPane.showMessageDialog(null, "One Or More Fields Are Empty", "Empty Fields", 2);
-                else if (!passText.equals(passText_confirm))
-                    JOptionPane.showMessageDialog(null, "Password Doesn't Match", "Confirm Password", 2);
-                else {
-                    try {
-                        Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
-                        PreparedStatement pst;
-                        pst = connection.prepareStatement("insert into TBLLOGIN(USER_NAME, PASSWORD, ROLE_ID)values(?,?,?)");
-                        pst.setString(1, Username);
-                        pst.setString(2, passText);
-                        pst.setString(3, RollIDText);
-                        pst.executeUpdate();
-                        JOptionPane.showMessageDialog(Register, "Your Login Details are stored...");
-                        connection.close();
+            // Create a method to add all the data from the fields to the table TBLLOGIN in the database
+            String Username = username_field.getText();
+            String passText = new String(passwordField.getPassword());
+            String passText_confirm = new String(passwordField1.getPassword());
+            String RollIDText = roleList.getSelectedItem().toString();
 
-                        // Calling The NewRegisterForm if it exists
-                        // GetBasicDetails obj = new GetBasicDetails();
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
+            // Check if rolelist is not selected
+            if (roleList.getSelectedIndex() == 0) {
+                JOptionPane.showMessageDialog(null, "Please select a role", "Role not selected", 2);
+                roleList.requestFocus();
+            }
+
+            if (Username.trim().equals("") || passText.trim().equals("") || passText_confirm.trim().equals(""))
+                JOptionPane.showMessageDialog(null, "One Or More Fields Are Empty", "Empty Fields", 2);
+            if (!passText.equals(passText_confirm))
+                JOptionPane.showMessageDialog(null, "Password Doesn't Match", "Confirm Password", 2);
+            else
+            {
+                try {
+                    String RollIDText1 = roleList.getSelectedItem().toString();
+                    String RoleID1 = getRoleID(RollIDText1);
+                    Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
+                    PreparedStatement pst;
+                    pst = connection.prepareStatement("insert into TBLLOGIN(USER_NAME, PASSWORD, ROLE_ID)values(?,?,?)");
+                    pst.setString(1, Username);
+                    pst.setString(2, passText);
+                    pst.setString(3, RoleID1);
+                    pst.executeUpdate();
+                    JOptionPane.showMessageDialog(Register, "Your Login Details are stored...");
+                    connection.close();
+
+                    // Calling The NewRegisterForm if it exists
+                    // GetBasicDetails obj = new GetBasicDetails();
+                } catch (Exception e1) {
+                    e1.printStackTrace();
                 }
             }
         });
+
+        JButton cancel = new JButton("Exit");
+        cancel.setBounds(740,390,100,30);
+        // To create a dialog box with yes or no options for the cancel button
+        cancel.addActionListener(e -> {
+            int dialogButton = JOptionPane.YES_NO_OPTION;
+            int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit from the application ?", "Warning", dialogButton);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                f.dispose();
+            }
+        });
+        // Change cancel button style
+        cancel.setBackground(Color.WHITE);
+        cancel.setBorder(BorderFactory.createMatteBorder(1,1,1,1,Color.BLACK));
+        cancel.setFont(new Font("Arial", Font.BOLD, 12));
+        // Submit Button Text Color
+        cancel.setForeground(Color.blue);
+        f.add(cancel);
+
+        // Creating the button to go back to the previous frame
+        JButton back = new JButton("Back");
+        back.setBounds(320,390,100,30);
+        // To move to previous page
+        back.addActionListener(e -> {
+                    f.dispose();
+                    new Login();
+                    Login.main(null);
+                }
+        );
+        // Change back button style
+        back.setBackground(Color.WHITE);
+        back.setBorder(BorderFactory.createMatteBorder(1,1,1,1,Color.BLACK));
+        back.setFont(new Font("Arial", Font.BOLD, 12));
+        // Back Button Text Color
+        back.setForeground(Color.blue);
+        f.add(back);
+
 
         JLabel label = new JLabel();
         f.add(label);
@@ -284,75 +409,5 @@ public class GetLoginInfo
         f.setSize(1600, 800);
         f.setLayout(null);
         f.setVisible(true);
-    }
-
-    // Create a method to display password strength bar and display it as soon password is typed
-    public void passwordStrength(JPasswordField passwordField) {
-        passwordField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                checkPasswordStrength(passwordField);
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                checkPasswordStrength(passwordField);
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                checkPasswordStrength(passwordField);
-            }
-        });
-    }
-
-    private void checkPasswordStrength(JPasswordField passwordField) {
-        String password = new String(passwordField.getPassword());
-        int strength = 0;
-        if (password.length() > 0) {
-            if (password.matches(".*[a-z]+.*")) {
-                strength++;
-            }
-            if (password.matches(".*[A-Z]+.*")) {
-                strength++;
-            }
-            if (password.matches(".*[0-9]+.*")) {
-                strength++;
-            }
-            if (password.matches(".*[!@#$%^&*()_+].*")) {
-                strength++;
-            }
-        }
-        if (strength == 1) {
-            passwordField.setBackground(Color.red);
-        } else if (strength == 2) {
-            passwordField.setBackground(Color.orange);
-        } else if (strength == 3) {
-            passwordField.setBackground(Color.green);
-        } else if (strength == 4) {
-            passwordField.setBackground(Color.blue);
-        }
-    }
-
-    // Create a method to get the role id
-    public static String getRoleID(String roleName) {
-        String roleID = "";
-        /**try {
-            Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
-            PreparedStatement pst;
-            pst = connection.prepareStatement("select ROLE_ID from TBLLOGIN ");
-            pst.setString(1, roleName);
-            ResultSet rs = pst.executeQuery();
-            while (rs.next()) {
-                roleID = rs.getString(1);
-            }
-            connection.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-*/        return roleID;
-    }
-    public static void main(String[] args) {
-        new GetLoginInfo();
     }
 }

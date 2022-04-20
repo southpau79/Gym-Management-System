@@ -368,50 +368,50 @@ public class GetBasicDetails
 
             }
             // If all are filled then add the data into the database
-            else
-            {
+            else {
                 // Email Validation
                 if (!email1.getText().contains("@") || !email1.getText().contains("."))
                     JOptionPane.showMessageDialog(f, "Please enter a valid email!");
-                // Invalid age
-                if (Integer.parseInt(age1.getText()) < 101)
+                    // Invalid age
+                if (Integer.parseInt(age1.getText()) > 100)
                     JOptionPane.showMessageDialog(f, "Age must be within than 100!");
-                // Get the values from the text fields
-                String FName = fname1.getText();
-                String MName = mname1.getText();
-                String LName = lname1.getText();
-                String Age = age1.getText();
-                String Email = email1.getText();
-                String DoorNo = doorno1.getText();
-                String StrName = strname1.getText();
-                String City = city1.getText();
-                String Pincode = pincode1.getText();
-                String State = state1.getText();
-                String Gender = genderList.getSelectedItem().toString();
+                else {
+                    // Get the values from the text fields
+                    String FName = fname1.getText();
+                    String MName = mname1.getText();
+                    String LName = lname1.getText();
+                    String Age = age1.getText();
+                    String Email = email1.getText();
+                    String DoorNo = doorno1.getText();
+                    String StrName = strname1.getText();
+                    String City = city1.getText();
+                    String Pincode = pincode1.getText();
+                    String State = state1.getText();
+                    String Gender = genderList.getSelectedItem().toString();
 
-            try {
-                Connection connection = (Connection) DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl",
-                        "system", "orcl");
+                    try {
+                        Connection connection = (Connection) DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl",
+                                "system", "orcl");
 
-                String query = "INSERT INTO TBLUSERS(FIRST_NAME, MIDDLE_NAME,LAST_NAME,AGE,GENDER,EMAIL_ID,DOOR_NO,STR_NAME,CITY,PINCODE,STATE) values('" + FName + "','" + MName + "','" + LName + "','" +
-                        Age + "','" + Gender + "','" + Email + "','" + DoorNo + "','" + StrName + "','" + City + "','" + Pincode + "','" + State + "')";
+                        String query = "INSERT INTO TBLUSERS(FIRST_NAME, MIDDLE_NAME,LAST_NAME,AGE,GENDER,EMAIL_ID,DOOR_NO,STR_NAME,CITY,PINCODE,STATE) values('" + FName + "','" + MName + "','" + LName + "','" +
+                                Age + "','" + Gender + "','" + Email + "','" + DoorNo + "','" + StrName + "','" + City + "','" + Pincode + "','" + State + "')";
 
-                Statement sta = connection.createStatement();
-                int x = sta.executeUpdate(query);
-                if (x > 0)
-                {
-                    JOptionPane.showMessageDialog(submit,
-                            "Welcome, " + "Your details is registered successfully! ");
-                    submit.setVisible(false);
-                    reset.setVisible(false);
-                    f.setVisible(false);
-                    f.dispose();
+                        Statement sta = connection.createStatement();
+                        int x = sta.executeUpdate(query);
+                        if (x > 0) {
+                            JOptionPane.showMessageDialog(submit,
+                                    "Welcome, " + "Your details is registered successfully! ");
+                            submit.setVisible(false);
+                            reset.setVisible(false);
+                            f.setVisible(false);
+                            f.dispose();
+                        }
+                        connection.close();
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
                 }
-                connection.close();
-            } catch (Exception exception) {
-                exception.printStackTrace();
             }
-        }
         });
 
         // Change submit button style

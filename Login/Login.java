@@ -190,7 +190,7 @@ public class Login extends JFrame {
         btnRegister.addActionListener(e ->
         {
             dispose();
-            NewUserRegister obj = new NewUserRegister();
+            GetBasicDetails obj = new GetBasicDetails();
             obj.main(null);
 
         });

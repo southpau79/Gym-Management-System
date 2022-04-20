@@ -7,9 +7,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.*;
 
-public class NewUserRegister
+public class GetBasicDetails
 {
-    public NewUserRegister()
+    public GetBasicDetails()
     {
         // Create a new frame
         JFrame f =new JFrame("New User Registration");
@@ -470,7 +470,7 @@ public class NewUserRegister
     public  static void  main(String[] args)
     {
         // Anonymous Object Creation
-        new NewUserRegister();
+        new GetBasicDetails();
     }
 
 }

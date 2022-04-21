@@ -17,7 +17,7 @@ public class ResetPassword
         f.setBackground(Color.cyan);
 
     // Create a new Label for the Title
-    JLabel title = new JLabel("User Login Details",JLabel.CENTER);
+    JLabel title = new JLabel("Reset Password",JLabel.CENTER);
         title.setBounds(500,10,400,50);
         title.setFont(new Font("Comic Sans MS", Font.BOLD, 30));
         title.setForeground(Color.BLUE);
@@ -42,7 +42,7 @@ public class ResetPassword
         username.setBounds(400, 150, 170, 80);
         username.setFont(new Font("Calibri", Font.ITALIC, 22));
         f.add(username);
-    username_field = new JTextField();
+        username_field = new JTextField();
         username_field.setBounds(600, 173, 200, 25);
 
     // KeyListener for checking if username is entered on pressing the check button
@@ -81,14 +81,14 @@ public class ResetPassword
 
 
     password = new JLabel("Enter Password: *");
-        password.setBounds(400, 200, 200, 80);
+        password.setBounds(400, 250, 200, 80);
         password.setFont(new Font("Calibri", Font.ITALIC, 22));
         f.add(password);
 
     passwordField = new JPasswordField();
     // Set the text colour to #ec3b83
         passwordField.setForeground(new Color(236, 59, 131));
-        passwordField.setBounds(600, 223, 200, 25);
+        passwordField.setBounds(600, 273, 200, 25);
     // Display the dialog box if the length of the password is less than 10
         passwordField.addKeyListener(new KeyAdapter() {
     public void keyTyped(KeyEvent e) {
@@ -135,11 +135,11 @@ public class ResetPassword
         f.add(passwordField);
 
     password_confirm= new JLabel("Confirm Password: *");
-        password_confirm.setBounds(400,250,200,80);
+        password_confirm.setBounds(400,300,200,80);
         password_confirm.setFont(new Font("Calibri", Font.ITALIC, 22));
         f.add(password_confirm);
     passwordField1 = new JPasswordField();
-        passwordField1.setBounds(600,273,200,25);
+        passwordField1.setBounds(600,323,200,25);
         passwordField1.addKeyListener(new KeyAdapter() {
     public void keyTyped(KeyEvent e) {
         if (String.valueOf(passwordField1.getPassword()).length() >= 30)
@@ -190,12 +190,12 @@ public class ResetPassword
 });
 
     JLabel RoleID = new JLabel("Old Password: *");
-        RoleID.setBounds(400,300,200,80);
+        RoleID.setBounds(400,200,200,80);
         RoleID.setFont(new Font("Calibri", Font.ITALIC, 22));
         f.add(RoleID);
 
     oldpassword_field = new JPasswordField();
-    oldpassword_field.setBounds(600,320,200,25);
+    oldpassword_field.setBounds(600,223,200,25);
     f.add(oldpassword_field);
 
     // To add a button to display password when the user clicks on it
@@ -204,59 +204,84 @@ public class ResetPassword
     // When the user clicks on the button, then display the password
         show_password.addActionListener(new ActionListener() {
     public void actionPerformed(ActionEvent e) {
+        if(String.valueOf(oldpassword_field.getPassword()).length()==0)
+        {
+            JOptionPane.showMessageDialog(null, "Please enter the password");
+        }
         passwordField.setEchoChar((char)0);
         passwordField1.setEchoChar((char)0);
+        oldpassword_field.setEchoChar((char)0);
     }
 });
         f.add(show_password);
 
+        // By Default its false
+        passwordField.setVisible(false);
+        passwordField1.setVisible(false);
+        password.setVisible(false);
+        password_confirm.setVisible(false);
+
     JButton Check = new JButton("Verify Account");
         Check.setBounds(850,168,170,25);
         f.add(Check);
-    // Add a Listener to the check button to check if the username exists and if the password is correct and disply a dialog box
+    // Add a KeyListener to the button to check if the username and his old password are correct
         Check.addActionListener(new ActionListener() {
-    public void actionPerformed(ActionEvent e) {
-        String username = username_field.getText();
-        if (username.equals("") && String.valueOf(oldpassword_field.getPassword()).equals(""))
-        {
-            JOptionPane.showMessageDialog(null, "Please enter a username");
-            // if the username field is filed and the password field is filled then check if the username exists
-            // Create a new connection to the database
-            try {
-                Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
-                PreparedStatement preparedStatement = (PreparedStatement) connection
-                        .prepareStatement("Select USER_NAME,PASSWORD from TBLLOGIN where USER_NAME = ? AND PASSWORD = ?");
-                preparedStatement.setString(1, username_field.getText());
-                preparedStatement.setString(2, String.valueOf(oldpassword_field.getPassword()));
-                ResultSet resultSet = preparedStatement.executeQuery();
-                if (resultSet.next()) {
-                    JOptionPane.showMessageDialog(null, "Account Verification Unsuccessful! Please Retry again", "Username Failed", 2);
-                    // Set the username field to blank
-                    username_field.setText("");
-                    // Set the password field to blank
-                    oldpassword_field.setText("");
-                    // Set the UserName field to red border to indicate that the username is not available
-                    username_field.setBorder(BorderFactory.createLineBorder(Color.red));
-                    oldpassword_field.setBorder(BorderFactory.createLineBorder(Color.red));
-                    // Set the focus to the username field
-                    username_field.requestFocus();
+            public void actionPerformed(ActionEvent e) {
+                // if the username is empty then display the error message on dialog box
+                if (username_field.getText().equals("") || (String.valueOf(oldpassword_field.getPassword()).equals("")))
+                {
+                    JOptionPane.showMessageDialog(f, "One or more fields is empty !", "Error", JOptionPane.ERROR_MESSAGE);
+                    if(username_field.getText().equals(""))
+                        username_field.requestFocus();
+                    else
+                        oldpassword_field.requestFocus();
                 }
+                else
+                {
+                // Connect with the database and check if the username and password is correct
+                try {
+                    // Connect to the ORACLE database
+                    Class.forName("oracle.jdbc.driver.OracleDriver");
+                    Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
+                    String sql = "SELECT * FROM TBLLOGIN WHERE USER_NAME = ? AND PASSWORD = ?";
+                    PreparedStatement ps = con.prepareStatement(sql);
+                    ps.setString(1, username_field.getText());
+                    ps.setString(2, String.valueOf(oldpassword_field.getPassword()));
+                    ResultSet rs = ps.executeQuery();
 
-                else {
-                    JOptionPane.showMessageDialog(null, "Account Verification successful ..... Proceed to change the password", "Username Available", 1);
-                    // Set the Username textfield to green border if the username is available
-                    username_field.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-                    oldpassword_field.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-                    //Set the focus to the password field
-                    passwordField.requestFocus();
+                    if (rs.next()) {
+                        // If the username and password are correct, then display the  dialog box
+                        JOptionPane.showMessageDialog(null, "Account Verified Successfully");
+                        // Set the focus on the new password field
+                        passwordField.requestFocus();
+                        //Set the username field to green border
+                        username_field.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+                        passwordField.setVisible(true);
+                        passwordField1.setVisible(true);
+                        password.setVisible(true);
+                        password_confirm.setVisible(true);
+
+                        // Focus on the new password field
+                        passwordField.requestFocus();
+                    }
+                    else {
+                        // If the username and password are not correct, then display the error message
+                        JOptionPane.showMessageDialog(null, "Account Credentials Wrong! Try Again", "Error", JOptionPane.ERROR_MESSAGE);
+                        username_field.requestFocus();
+                        username_field.setBorder(BorderFactory.createLineBorder(Color.RED));
+                        username_field.setText("");
+                        oldpassword_field.setText("");
+                        passwordField.setVisible(false);
+                        passwordField1.setVisible(false);
+                        password.setVisible(false);
+                        password_confirm.setVisible(false);
+                    }
                 }
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            } ;
-        }
-    }
-}
-});
+                catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+    }});
 
     JButton Register = new JButton("Change Password");
         Register.setBounds(500,390,200,25);
@@ -295,15 +320,15 @@ public class ResetPassword
                 if (pst.executeUpdate() > 0)
                 {
                     JOptionPane.showMessageDialog(null, "Password Changed Successfully", "Password Changed", 1);
-                    Register.setVisible(false); }
+                    Register.setVisible(false);
+                }
                 else
                     JOptionPane.showMessageDialog(null, "Password Change Unsuccessful", "Password Change", 2);
                 connection.close();
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
-        }
-    });
+        }});
 
     JButton cancel = new JButton("Exit");
         cancel.setBounds(740,390,100,30);
@@ -349,4 +374,8 @@ public class ResetPassword
         f.setLayout(null);
         f.setVisible(true);
     }
+    public static void main(String[] args) {
+        new ResetPassword();
+    }
 }
+

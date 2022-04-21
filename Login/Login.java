@@ -17,6 +17,26 @@ import javax.swing.border.EmptyBorder;
 
 public class Login extends JFrame {
 
+    // Get user_id method from the database
+    public static int getUserId(String username) {
+        int user_id = 0;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl",
+                    "system", "orcl");
+            PreparedStatement stmt = conn.prepareStatement("SELECT  USER_NAME FROM TBLLOGIN WHERE user_id = ?");
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                user_id = rs.getInt("user_id");
+            }
+            conn.close();
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return user_id;
+    }
+
     private static final long serialVersionUID = 1L;
     private JTextField textField;
     private JPasswordField passwordField;
@@ -171,6 +191,7 @@ public class Login extends JFrame {
                     ah.main(null);
                     */
                     JOptionPane.showMessageDialog(btnNewButton, "You have successfully logged in");
+
                 }
                 else if (userName.trim().equals("") || password.trim().equals(""))
                     JOptionPane.showMessageDialog(null, "One Or More Fields Are Empty", "Empty Fields", 2);
@@ -181,6 +202,7 @@ public class Login extends JFrame {
             }
         });
         contentPane.add(btnAdminLogin);
+
 
         JButton btnRegister = new JButton("New Account");
         btnRegister.setFont(new Font("Tahoma", Font.PLAIN, 18));
@@ -200,3 +222,6 @@ public class Login extends JFrame {
         contentPane.add(label);
     }
 }
+
+
+

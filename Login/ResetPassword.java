@@ -80,7 +80,7 @@ public class ResetPassword
         f.add(password_constraints);
 
 
-    password = new JLabel("Enter Password: *");
+    password = new JLabel("Enter New Password: *");
         password.setBounds(400, 250, 200, 80);
         password.setFont(new Font("Calibri", Font.ITALIC, 22));
         f.add(password);
@@ -134,7 +134,7 @@ public class ResetPassword
 });
         f.add(passwordField);
 
-    password_confirm= new JLabel("Confirm Password: *");
+    password_confirm= new JLabel("Confirm New Password: *");
         password_confirm.setBounds(400,300,200,80);
         password_confirm.setFont(new Font("Calibri", Font.ITALIC, 22));
         f.add(password_confirm);

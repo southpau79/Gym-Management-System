@@ -14,8 +14,7 @@ public class GetLoginInfo
         new GetLoginInfo();
     }
 
-// Method that will indicate the password strength on  a ProgressBar
-private static int calculatePasswordStrength(@NotNull String password, JProgressBar progressBar) {
+    static int calculatePasswordStrength(@NotNull String password, JProgressBar progressBar) {
 
     //total score of password
     int iPasswordScore = 0;

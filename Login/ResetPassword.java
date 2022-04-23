@@ -442,8 +442,8 @@ public static String findEmail(String username)
                             String message = "\nHi " + full_name + ",\n\nThis email confirms that your password has been changed." +
                                     "\n\nTo log in to the Gym Vale Application, use the following credentials :" +
                                     " \n\nUsername : " +  rs2.getString(1) +"\nPassword : " + rs2.getString(2) +
-                                    "\n\nIf you have any questions or encounter any problems, please logging in to the application," +
-                                    " please contact the administrator.\n\nThank you,\n\nGym Vale ";
+                                    "\n\nIf you have any questions or encounter any problems on logging into the application," +
+                                    " please contact the administrator.\n\nThank you,\nGym Vale Team ";
                             // Call the sendMail method to send the email
                             Mailer mailer = new Mailer();
                             mailer.Send_Email(email,subject,message);

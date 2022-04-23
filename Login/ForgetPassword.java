@@ -9,6 +9,49 @@ import static Login.GetLoginInfo.calculatePasswordStrength;
 
 public class ForgetPassword
 {
+    public boolean isValidEmailAddress(String email) {
+        String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
+        java.util.regex.Matcher m = p.matcher(email);
+        return m.matches();
+    }
+
+    // Function that will find weather the user exists or not
+    public boolean findUser(String username, String email)
+    {
+        try
+        {
+            // Connecting to the database
+            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
+            String sql = "SELECT a.PASSWORD,a.USER_NAME,b.EMAIL_ID FROM  TBLLOGIN a, TBLUSERS b WHERE b.EMAIL_ID = '" + email + "' AND a.USER_ID = b.USER_ID";
+            Statement sta = con.createStatement();
+            int x = sta.executeUpdate(sql);
+            // Check if the email is in the database
+            if (x > 0)
+            {
+                // Get the username from the database and call the Mail class to send the username to the email
+                ResultSet rs = sta.executeQuery(sql);
+                while (rs.next())
+                {
+                    String user_name = rs.getString(2);
+                    String email_id = rs.getString(3);
+                    if (user_name.equals(username) && email_id.equals(email))
+                        return true;
+
+                    else
+                        return false;
+                }
+            }
+            else
+                JOptionPane.showMessageDialog(null, "The email you entered is not in the database");
+        }
+        catch(Exception e)
+        {
+            System.out.println(e);
+            return false;
+        }
+        return false;
+    }
     ForgetPassword()
     {
         // Create a new frame
@@ -61,39 +104,6 @@ public class ForgetPassword
         f.add(username_field);
 
 
-        password = new JLabel("Your Password: ");
-        password.setBounds(400, 250, 220, 80);
-        password.setFont(new Font("Calibri", Font.ITALIC, 20));
-        password.setVisible(false);
-        f.add(password);
-
-        passwordField = new JTextField();
-        // Set the text colour to #ec3b83
-        passwordField.setForeground(new Color(236, 59, 131));
-        passwordField.setBounds(600, 275, 200, 25);
-        passwordField.setVisible(false);
-
-        // Display the dialog box if the length of the password is less than 10
-        passwordField.addKeyListener(new KeyAdapter() {
-            public void keyTyped(KeyEvent e) {
-                if (passwordField.getText().length() >= 30)
-                    e.consume();
-            }
-        });
-
-        // Call the method to check the strength of the password
-
-        // When the userfield is on focus , then display the username_label
-        username_field.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent e) {
-                passwordField.setText("");
-            }
-        });
-
-
-        // By Default its false
-        f.add(passwordField);
-
         // Creating the Labels and TextFields for Email
         email = new JLabel("Email ID: *");
         email.setBounds(400,200,120,80);
@@ -118,47 +128,105 @@ public class ForgetPassword
         // Add a KeyListener to the button to check if the username and his old password are correct
         Check.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // if the username is empty then display the error message on dialog box
-                if (username_field.getText().equals("") || email_field.getText().equals(""))
+
+                if (username_field.getText().length() == 0)
                 {
-                    JOptionPane.showMessageDialog(f, "One or more fields is empty !", "Error", JOptionPane.ERROR_MESSAGE);
-                    if(username_field.getText().equals(""))
-                        username_field.requestFocus();
-                    else
-                        email_field.requestFocus();
+                    JOptionPane.showMessageDialog(null, "Please enter the username !");
+                    // Set red border to the text field
+                    username_field.setBorder(BorderFactory.createLineBorder(Color.red));
+                    username_field.requestFocus();
                 }
+
+                if(email_field.getText().length() == 0)
+                {
+                    JOptionPane.showMessageDialog(null, "Please enter the Email ID!");
+                    email_field.setBorder(BorderFactory.createLineBorder(Color.red));
+                    email_field.requestFocus();
+                }
+
                 else
                 {
-                    // Connect with the database and check if the username and password is correct
-                    try {
-                        // Connect to the ORACLE database
-                        Class.forName("oracle.jdbc.driver.OracleDriver");
-                        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
-                        String sql = "SELECT TBLUSERS.EMAIL_ID,TBLLOGIN.PASSWORD,TBLLOGIN.USER_NAME\n" +
-                                "FROM TBLUSERS\n" +
-                                "         JOIN TBLLOGIN ON TBLUSERS.USER_ID = TBLLOGIN.USER_ID;";
-                        PreparedStatement pst = con.prepareStatement(sql);
-                        ResultSet rs = pst.executeQuery();
-                        // If the username and password is correct then display the password field
-                        if (rs.next()) {
-                            passwordField.setVisible(true);
-                            password.setVisible(true);
-                            // Set the password to the field
-                            passwordField.setText(rs.getString("PASSWORD"));
+                    // Cheking if the email is valid
+                    if(isValidEmailAddress(email_field.getText()))
+                    {
+                        if(findUser(username_field.getText(),email_field.getText()))
+                        {
+                            JOptionPane.showMessageDialog(null, "The username and email are correct");
+                            // Set green border to the text field
+                            username_field.setBorder(BorderFactory.createLineBorder(Color.green));
+                            email_field.setBorder(BorderFactory.createLineBorder(Color.green));
+
+                            try
+                            {
+                                // Connect to the database oracle
+                                Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
+                                // Select the username from the tbllogin table where the user id is the same as the user id from the database
+                                String sql ="SELECT a.PASSWORD,b.FIRST_NAME,b.LAST_NAME, b.EMAIL_ID FROM  TBLLOGIN a, TBLUSERS b WHERE b.EMAIL_ID = '"+email_field.getText()+"' AND a.USER_ID = b.USER_ID";
+                                Statement sta = con.createStatement();
+                                int x = sta.executeUpdate(sql);
+                                // Show a dialog box showing that the password is being retrieved from the database
+                                JOptionPane.showMessageDialog(null, "The password is being retrieved from the database. Please wait ..");
+
+                                // Check if the email is in the database
+                                if (x > 0)
+                                {
+                                    // Get the username from the database and call the Mail class to send the username to the email
+                                    ResultSet rs = sta.executeQuery(sql);
+                                    while (rs.next())
+                                    {
+                                        String password = rs.getString(1);
+                                        String first_name = rs.getString(2);
+                                        String last_name = rs.getString(3);
+                                        String full_name = first_name + " " + last_name;
+                                        String subject = "Gym Vale - Forgot Password";
+
+                                        String message = "\nHi " + full_name + ",\n\nYour Password is : " + password + "\n\nIf these changes were made in error, or if you suspect an unauthorised person has requested for your username to be sent to you, " +
+                                                "please contact the administrator to let us know.\n\nThank you for using our service.\n\nRegards,\nThe Admin Team,\nTeam Gym Vale\n\nNote: This is a system generated mail, please do not reply.";
+
+                                        Mailer mailer = new Mailer();
+                                        mailer.Send_Email(email_field.getText(),subject, message);
+
+                                        // Show the user that the username has been sent to the email
+                                        JOptionPane.showMessageDialog(null, "We have sent your password to the email address associated with \n" +
+                                                "your account.If you cannot find this email, please check your spam\n" +
+                                                "folder. If you still cannot find it, please contact the administrator.");
+                                    }
+                                }
+                                else
+                                {
+                                    JOptionPane.showMessageDialog(null, "An Account with the specified User Name is not found!");
+                                    // Set the username field to blank
+                                    username_field.setText("");
+                                    // Set the focus to the username field
+                                    username_field.requestFocus();
+                                }
+                            }
+                            catch (Exception ex) {
+                                JOptionPane.showMessageDialog(null, ex);
+                            }
                         }
-                        // If the username is not in db then display the error message on dialog box
                         else
                         {
-                            JOptionPane.showMessageDialog(f, "Username does not exist !", "Error", JOptionPane.ERROR_MESSAGE);
-                            username_field.setText("");
-                            username_field.requestFocus();
+                            JOptionPane.showMessageDialog(null, "The username and email are not correct");
+                            // Set red border to the text field
+                            username_field.setBorder(BorderFactory.createLineBorder(Color.red));
+                            email_field.setBorder(BorderFactory.createLineBorder(Color.red));
                         }
                     }
-                    catch (Exception ex) {
-                        ex.printStackTrace();
+                    else
+                    {
+                        // Show that the email format is invalid
+                        JOptionPane.showMessageDialog(null, "Email is not formatted properly ! Please retype with the correct email format.");
+                        // Set the username field to blank
+                        email_field.setText("");
+                        // Set the focus to the username field
+                        email_field.requestFocus();
+                        //Set red border to the text field
+                        email_field.setBorder(BorderFactory.createLineBorder(Color.red));
                     }
                 }
-            }});
+            };
+        });
 
 
         JButton cancel = new JButton("Exit");

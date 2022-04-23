@@ -6,9 +6,55 @@ import java.awt.event.*;
 import java.sql.*;
 
 import static Login.GetLoginInfo.calculatePasswordStrength;
+import static javax.swing.JOptionPane.*;
 
 public class ResetPassword
 {
+    // Method to generate a verification code
+    public static String generateVerificationCode()
+    {
+        String verificationCode = "";
+        for (int i = 0; i < 6; i++)
+        {
+            int randomNumber = (int) (Math.random() * 10);
+            verificationCode += randomNumber;
+        }
+        return verificationCode;
+    }
+
+    // Function that finds the email address from the database through the username
+public static String findEmail(String username)
+    {
+        try
+        {
+            // Connecting to the database
+            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
+            // Select username and password from tbllogin
+            String sql = "SELECT a.USER_NAME,b.EMAIL_ID  FROM TBLUSERS b,TBLLOGIN a WHERE USER_NAME = '" + username + "' AND a.USER_ID = b.USER_ID";
+            Statement sta = con.createStatement();
+            int x = sta.executeUpdate(sql);
+            // Check if the email is in the database
+            if (x > 0)
+            {
+                // Get the username from the database and call the Mail class to send the username to the email
+                ResultSet rs = sta.executeQuery(sql);
+                while (rs.next())
+                {
+                    String email = rs.getString(2);
+                    return email;
+                }
+            }
+            else
+                showMessageDialog(null, "The account you entered is not in the database!");
+        }
+        catch(Exception e)
+        {
+            System.out.println(e);
+            return null;
+        }
+        return null;
+    }
+
     ResetPassword()
     {
     // Create a new frame
@@ -28,15 +74,6 @@ public class ResetPassword
     JTextField username_field;
     JPasswordField passwordField, passwordField1,oldpassword_field;
 
-    // Create a JLabel with the text "The Username should be atleast 6 characters long and should not be a email address"
-    JLabel username_label = new JLabel("     The Username should be atleast 6 characters long and at maximum 15 characters long. " +
-            "It should not be a email address format");
-        username_label.setBounds(80,70,1200,50);
-        username_label.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
-        username_label.setForeground(new Color(2, 138, 15));
-        username_label.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        username_label.setVisible(false);
-        f.add(username_label);
 
     username = new JLabel("Enter Username: *");
         username.setBounds(400, 150, 170, 80);
@@ -50,7 +87,7 @@ public class ResetPassword
     public void keyTyped(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             if (username_field.getText().length() == 0) {
-                JOptionPane.showMessageDialog(null, "Please enter a username");
+                showMessageDialog(null, "Please enter a username");
             }
         }
     }});
@@ -82,7 +119,7 @@ public class ResetPassword
 
     password = new JLabel("Enter New Password: *");
         password.setBounds(400, 250, 200, 80);
-        password.setFont(new Font("Calibri", Font.ITALIC, 22));
+        password.setFont(new Font("Calibri", Font.ITALIC, 20));
         f.add(password);
 
     passwordField = new JPasswordField();
@@ -136,7 +173,7 @@ public class ResetPassword
 
     password_confirm= new JLabel("Confirm New Password: *");
         password_confirm.setBounds(400,300,200,80);
-        password_confirm.setFont(new Font("Calibri", Font.ITALIC, 22));
+        password_confirm.setFont(new Font("Calibri", Font.ITALIC, 18));
         f.add(password_confirm);
     passwordField1 = new JPasswordField();
         passwordField1.setBounds(600,323,200,25);
@@ -182,10 +219,6 @@ public class ResetPassword
     public void focusGained(FocusEvent e) {
         passwordField.setText("");
         passwordField1.setText("");
-        username_label.setVisible(true);
-    }
-    public void focusLost(FocusEvent e) {
-        username_label.setVisible(false);
     }
 });
 
@@ -206,7 +239,7 @@ public class ResetPassword
     public void actionPerformed(ActionEvent e) {
         if(String.valueOf(oldpassword_field.getPassword()).length()==0)
         {
-            JOptionPane.showMessageDialog(null, "Please enter the password");
+            showMessageDialog(null, "Please enter the password");
         }
         passwordField.setEchoChar((char)0);
         passwordField1.setEchoChar((char)0);
@@ -226,11 +259,12 @@ public class ResetPassword
         f.add(Check);
     // Add a KeyListener to the button to check if the username and his old password are correct
         Check.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e)
+            {
                 // if the username is empty then display the error message on dialog box
                 if (username_field.getText().equals("") || (String.valueOf(oldpassword_field.getPassword()).equals("")))
                 {
-                    JOptionPane.showMessageDialog(f, "One or more fields is empty !", "Error", JOptionPane.ERROR_MESSAGE);
+                    showMessageDialog(f, "One or more fields is empty !", "Error", ERROR_MESSAGE);
                     if(username_field.getText().equals(""))
                         username_field.requestFocus();
                     else
@@ -238,50 +272,110 @@ public class ResetPassword
                 }
                 else
                 {
-                // Connect with the database and check if the username and password is correct
-                try {
-                    // Connect to the ORACLE database
-                    Class.forName("oracle.jdbc.driver.OracleDriver");
-                    Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
-                    String sql = "SELECT * FROM TBLLOGIN WHERE USER_NAME = ? AND PASSWORD = ?";
-                    PreparedStatement ps = con.prepareStatement(sql);
-                    ps.setString(1, username_field.getText());
-                    ps.setString(2, String.valueOf(oldpassword_field.getPassword()));
-                    ResultSet rs = ps.executeQuery();
 
-                    if (rs.next()) {
-                        // If the username and password are correct, then display the  dialog box
-                        JOptionPane.showMessageDialog(null, "Account Verified Successfully");
-                        // Set the focus on the new password field
-                        passwordField.requestFocus();
-                        //Set the username field to green border
-                        username_field.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-                        passwordField.setVisible(true);
-                        passwordField1.setVisible(true);
-                        password.setVisible(true);
-                        password_confirm.setVisible(true);
+                    try {
+                        // Connect to the ORACLE database
+                        Class.forName("oracle.jdbc.driver.OracleDriver");
+                        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
+                        String sql = "SELECT * FROM TBLLOGIN WHERE USER_NAME = ? AND PASSWORD = ?";
+                        PreparedStatement ps = con.prepareStatement(sql);
+                        ps.setString(1, username_field.getText());
+                        ps.setString(2, String.valueOf(oldpassword_field.getPassword()));
+                        ResultSet rs = ps.executeQuery();
 
-                        // Focus on the new password field
-                        passwordField.requestFocus();
-                    }
-                    else {
-                        // If the username and password are not correct, then display the error message
-                        JOptionPane.showMessageDialog(null, "Account Credentials Wrong! Try Again", "Error", JOptionPane.ERROR_MESSAGE);
-                        username_field.requestFocus();
-                        username_field.setBorder(BorderFactory.createLineBorder(Color.RED));
-                        username_field.setText("");
-                        oldpassword_field.setText("");
-                        passwordField.setVisible(false);
-                        passwordField1.setVisible(false);
-                        password.setVisible(false);
-                        password_confirm.setVisible(false);
-                    }
+                        if (rs.next())
+                        {
+                            try
+                            {
+                                // Connect to the database oracle
+                                Connection con1 = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
+                                // Select the username from the tbllogin table where the user id is the same as the user id from the database
+                                String sql1 ="SELECT a.PASSWORD,b.FIRST_NAME,b.LAST_NAME, b.EMAIL_ID,a.USER_NAME FROM  TBLLOGIN a, TBLUSERS b WHERE a.USER_NAME = '"+username_field.getText()+"' AND a.USER_ID = b.USER_ID";
+                                Statement sta = con1.createStatement();
+                                int x = sta.executeUpdate(sql1);
+
+                                // Check if the email is in the database
+                                if (x > 0)
+                                {
+                                    // Get the username from the database and call the Mail class to send the username to the email
+                                    ResultSet rs1 = sta.executeQuery(sql1);
+                                    while (rs1.next())
+                                    {
+                                        showMessageDialog(null, "Account Verified Successfully");
+
+                                        // Call the generateVerificationCode method to generate a verification code
+                                        String first_name = rs1.getString(2);
+                                        String last_name = rs1.getString(3);
+                                        String full_name = first_name + " " + last_name;
+                                        String email = rs1.getString(4);
+                                        String subject = "Gym Vale - Confirm your account";
+                                        String verification_code = generateVerificationCode();
+
+                                        showMessageDialog(null, "The verification code is being generated... Please proceed to the next step...");
+
+                                        String message = "\nHey " + full_name + "," +
+                                                "\n\nSomebody(hopefully you) requested to set a new password for the Gym Vale account for " + email + "" +
+                                                " . No changes have been made to your account yet." +
+                                                " \n\nYou can reset your password by using the following code : " + verification_code +
+                                                "\n\n We'll be here to help you with any step along the way. " +
+                                                "\n\nIf you did not request a new password, please let us know immediately by replying to this email. " +
+                                                "\n\nThank you for using our service.\n\nRegards,\nThe Admin Team,\nTeam Gym Vale";
+
+                                        // Call the sendMail method to send the email
+                                        Mailer mailer = new Mailer();
+                                        mailer.Send_Email(email,subject,message);
+
+                                        // Show the user that the username has been sent to the email
+                                        showMessageDialog(null, "We have sent an Verification Code to the email address associated with \n" +
+                                                "your account.If you cannot find this email, please check your spam\n" +
+                                                "folder. If you still cannot find it, please contact the administrator.");
+
+                                        // Prompt a dialog box asking the user to enter the verification code
+                                        String verification_code_input = showInputDialog("Please enter the verification code sent to your email address : ");
+                                        // Check if the verification code is correct
+                                        if (verification_code_input.equals(verification_code))
+                                        {
+                                            // If the verification code is correct, then show the password
+                                            passwordField.setVisible(true);
+                                            passwordField1.setVisible(true);
+                                            password.setVisible(true);
+                                            password_confirm.setVisible(true);
+                                            // Set the focus on the password field
+                                            passwordField.requestFocus();
+                                            // Hide the check button
+                                            Check.setVisible(false);
+                                            // Make the username field uneditable
+                                            username_field.setEditable(false);
+                                            // Make the old password field uneditable
+                                            oldpassword_field.setEditable(false);
+                                        }
+                                        else
+                                            // If the verification code is incorrect, then show the error message
+                                            showMessageDialog(null, "The verification code you entered is incorrect. Please try again by clicking  the verify button again.");
+                                    }
+                                }
+                                else
+                                {
+                                    showMessageDialog(null, "Verification code could not be generated. Please try again later.");
+                                }
+                            }
+                            catch (Exception ex) {
+                                showMessageDialog(null, ex);
+                            }
+                        }
+                        else
+                        {
+                            showMessageDialog(f, "Incorrect Credentials !", "Error", ERROR_MESSAGE);
+                            oldpassword_field.setText("");
+                            oldpassword_field.requestFocus();
+                        }
+
+                        } catch (SQLException | ClassNotFoundException ex) {
+                        throw new RuntimeException(ex);
+                        }
                 }
-                catch (Exception ex) {
-                    ex.printStackTrace();
                 }
-            }
-    }});
+            });
 
     JButton Register = new JButton("Change Password");
         Register.setBounds(500,390,200,25);
@@ -295,48 +389,93 @@ public class ResetPassword
         String oldpassword1 = new String(oldpassword_field.getPassword());
 
         if (Username.trim().equals("") || passText.trim().equals("") || passText_confirm.trim().equals("") || oldpassword1.trim().equals(""))
-        {
-            JOptionPane.showMessageDialog(null, "One Or More Fields Are Empty", "Empty Fields", 2);
+            showMessageDialog(null, "One Or More Fields Are Empty", "Empty Fields", 2);
 
-            // If the fields are filled then check if the password and confirm password are the same
-            if (!passText.equals(passText_confirm))
-                JOptionPane.showMessageDialog(null, "Password Doesn't Match", "Confirm Password", 2);
-
-            // Check if the new password is the same as the old password
-            if(oldpassword1.equals(passText))
-                JOptionPane.showMessageDialog(null, "Old Password and New Password Cannot be the same", "Old Password", 2);
+        // If the fields are filled then check if the password and confirm password are the same
+        if (!passText.equals(passText_confirm)) {
+            showMessageDialog(null, "Password Doesn't Match", "Confirm Password", 2);
+            passwordField.setText("");
+            passwordField1.setText("");
+            passwordField.requestFocus();
         }
 
-        else
+        // Check if the new password is the same as the old password
+        if(passText.equals(oldpassword1) && passText_confirm.equals(oldpassword1)) {
+            showMessageDialog(null, "Old Password and New Password Cannot be the same", "Old Password", 2);
+            passwordField.setText("");
+            passwordField1.setText("");
+            passwordField.requestFocus();
+        }
+
+        if(passText.equals(passText_confirm) && !passText.equals(oldpassword1) && !passText_confirm.equals(oldpassword1))
         {
             // Connect to the database and update the password
             try {
                 Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
-                PreparedStatement pst;
-                pst = connection.prepareStatement("UPDATE TBLLOGIN SET PASSWORD = ? WHERE USER_NAME = ?");
-                pst.setString(1, passText);
-                pst.setString(2, Username);
-                pst.executeUpdate();
-                if (pst.executeUpdate() > 0)
+                String sql = "UPDATE TBLLOGIN SET PASSWORD = '" + passText + "' WHERE USER_NAME = '" + Username + "'";
+                Statement statement = connection.createStatement();
+                int x = statement.executeUpdate(sql);
+                if(x >0)
                 {
-                    JOptionPane.showMessageDialog(null, "Password Changed Successfully", "Password Changed", 1);
-                    Register.setVisible(false);
+                    // showMessageDialog(null, "Password Changed Successfully", "Password Changed", 1);
+                    Connection con2 = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
+                    // Select the username from the tbllogin table where the user id is the same as the user id from the database
+                    String sql2 ="SELECT a.USER_NAME,a.PASSWORD,b.FIRST_NAME,b.LAST_NAME, b.EMAIL_ID FROM  TBLLOGIN a, TBLUSERS b WHERE a.USER_NAME = '"+Username+"' AND a.USER_ID = b.USER_ID";
+                    Statement sta = con2.createStatement();
+                    int y = sta.executeUpdate(sql2);
+
+                    // Check if the email is in the database
+                    if (y > 0)
+                    {
+                        // Get the username from the database and call the Mail class to send the username to the email
+                        ResultSet rs2 = sta.executeQuery(sql2);
+                        while (rs2.next())
+                        {
+                            // Call the generateVerificationCode method to generate a verification code
+                            String UserName = rs2.getString(1);
+                            String first_name = rs2.getString(3);
+                            String last_name = rs2.getString(4);
+                            String full_name = first_name + " " + last_name;
+                            String email = rs2.getString(5);
+                            String subject = "Gym Vale - Your password has been changed!";
+
+                            String message = "\nHi " + full_name + ",\n\nThis email confirms that your password has been changed." +
+                                    "\n\nTo log in to the Gym Vale Application, use the following credentials :" +
+                                    " \n\nUsername : " +  rs2.getString(1) +"\nPassword : " + rs2.getString(2) +
+                                    "\n\nIf you have any questions or encounter any problems, please logging in to the application," +
+                                    " please contact the administrator.\n\nThank you,\n\nGym Vale ";
+                            // Call the sendMail method to send the email
+                            Mailer mailer = new Mailer();
+                            mailer.Send_Email(email,subject,message);
+                            // Show the dialog box to the user that the password has been changed
+                            showMessageDialog(null, "Your password has been changed successfully.");
+                            // Set all the fields to setEditable to false
+                            username_field.setEditable(false);
+                            passwordField.setEditable(false);
+                            passwordField1.setEditable(false);
+                            oldpassword_field.setEditable(false);
+                            Register.setVisible(false);
+                        }
+                    }
                 }
                 else
-                    JOptionPane.showMessageDialog(null, "Password Change Unsuccessful", "Password Change", 2);
+                    showMessageDialog(null, "Password could not be changed. Please try again later.");
                 connection.close();
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
-        }});
+        }
+        else
+            showMessageDialog(null, "Password could not be changed!!", "Password could not be changed", 2);
+    });
 
     JButton cancel = new JButton("Exit");
         cancel.setBounds(740,390,100,30);
     // To create a dialog box with yes or no options for the cancel button
         cancel.addActionListener(e -> {
-    int dialogButton = JOptionPane.YES_NO_OPTION;
-    int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit from the application ?", "Warning", dialogButton);
-    if (dialogResult == JOptionPane.YES_OPTION) {
+    int dialogButton = YES_NO_OPTION;
+    int dialogResult = showConfirmDialog(null, "Are you sure you want to exit from the application ?", "Warning", dialogButton);
+    if (dialogResult == YES_OPTION) {
         f.dispose();
     }
 });

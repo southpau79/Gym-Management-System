@@ -106,12 +106,13 @@ public class ForgetUserName {
                                     String first_name = rs.getString(2);
                                     String last_name = rs.getString(3);
                                     String full_name = first_name + " " + last_name;
+                                    String subject = "Gym Vale - Forget Username";
 
                                     String message = "\nHi " + full_name + ",\n\nYour Username is : " + user_name + "\n\nIf these changes were made in error, or if you suspect an unauthorised person has requested for your username to be sent to you, " +
                                             "please contact the administrator to let us know.\n\nThank you for using our service.\n\nRegards,\nThe Admin Team,\nTeam Gym Vale\n\nNote: This is a system generated mail, please do not reply.";
 
                                     Mailer mailer = new Mailer();
-                                    mailer.Send_Email(username_field.getText(), message);
+                                    mailer.Send_Email(username_field.getText(),subject,message);
 
                                     // Show the user that the username has been sent to the email
                                     JOptionPane.showMessageDialog(null, "We have sent your username to the email address associated with \n" +

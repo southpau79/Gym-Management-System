@@ -9,14 +9,14 @@ import java.util.Properties;
 
 public class Mailer {
 
-    final String User_Email = "noreplytest.gymvale@gmail.com"; //your email
-    final String Password = "GymVale8068@"; // your email password
-    final String Sender = "noreplytest.gymvale@gmail.com"; // Insert Your email again
+    static final String User_Email = "noreplytest.gymvale@gmail.com"; //your email
+    static final String Password = "GymVale8068@"; // your email password
+    static final String Sender = "noreplytest.gymvale@gmail.com"; // Insert Your email again
     // Insert Receiver's Email
     final String Email_Subject = "Gym Vale - Forgot Username"; // Insert Email Subject
 
 
-    public void Send_Email(String Receiver_mail,String Body)
+    public void Send_Email(String Receiver_mail, String Subject, String Body)
     {
         final Session newsession = Session.getInstance(this.Mail_Properties(), new Authenticator()
         {
@@ -33,7 +33,7 @@ public class Mailer {
             final Message Demo_Message = new MimeMessage(newsession);
             Demo_Message.setRecipient(Message.RecipientType.TO, new InternetAddress(Receiver_mail));
             Demo_Message.setFrom(new InternetAddress(Sender));
-            Demo_Message.setSubject(Email_Subject); // email subject
+            Demo_Message.setSubject(Subject); // email subject
             Demo_Message.setText(Body); // The content of email
             Demo_Message.setSentDate(new Date());
             Transport.send(Demo_Message);// Transport the email

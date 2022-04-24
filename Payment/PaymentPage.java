@@ -1,11 +1,20 @@
 package Payment;
 
+import Login.Mailer;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import static javax.swing.JOptionPane.showMessageDialog;
-public class HomePage
+public class PaymentPage
 {
     public boolean isValidEmailAddress(String email) {
         String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
@@ -41,7 +50,7 @@ public class HomePage
         return m.matches();
     }
 
-    public HomePage()
+    public PaymentPage()
     {
         // Create a new frame
         JFrame f =new JFrame("Forget Password");
@@ -97,6 +106,18 @@ public class HomePage
                     e.consume();
             }
         });
+
+        // Key Listener for the Email TextField to allow only alphabets
+        firstname_field.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == KeyEvent.VK_BACK_SPACE) || (c == KeyEvent.VK_SPACE)|| (c == KeyEvent.VK_DELETE))) {
+                    f.getToolkit().beep();
+                    e.consume();
+                }
+            }
+        });
         f.add(firstname);
         f.add(firstname_field);
 
@@ -120,6 +141,19 @@ public class HomePage
                     e.consume();
             }
         });
+
+        // Key Listener to allow only alphabets and space
+        nameoncard_field.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == KeyEvent.VK_BACK_SPACE) || (c == KeyEvent.VK_SPACE)|| (c == KeyEvent.VK_DELETE))) {
+                    f.getToolkit().beep();
+                    e.consume();
+                }
+            }
+        });
+
         f.add(nameoncard);
         f.add(nameoncard_field);
 
@@ -156,27 +190,29 @@ public class HomePage
             }
         });
 cardnumber_field.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                if (cardnumber_field.getText().length() == 4 || cardnumber_field.getText().length() == 9 || cardnumber_field.getText().length() == 14)
-                {
-                    if (cardnumber_field.getText().charAt(0) == '4')
-                            // Show the image of VISA card from the img folder of Payment Package
-                        cardtype.setIcon(new ImageIcon("C:\\Users\\vikaa\\IdeaProjects\\Gym-Management-System\\Payment\\img\\visa.png"));
-                    else if (cardnumber_field.getText().startsWith("51") || cardnumber_field.getText().substring(0, 2).equals("52") || cardnumber_field.getText().substring(0, 2).equals("53") || cardnumber_field.getText().substring(0, 2).equals("54") || cardnumber_field.getText().substring(0, 2).equals("55"))
-                        cardtype.setIcon(new ImageIcon("C:\\Users\\vikaa\\IdeaProjects\\Gym-Management-System\\Payment\\img\\mastercard.jpg"));
-                    else if (cardnumber_field.getText().startsWith("34") || cardnumber_field.getText().substring(0, 2).equals("37"))
-                        cardtype.setIcon(new ImageIcon("C:\\Users\\vikaa\\IdeaProjects\\Gym-Management-System\\Payment\\img\\amex.png"));
-                    else if(cardnumber_field.getText().charAt(0) == '6')
-                        cardtype.setIcon(new ImageIcon("C:\\Users\\vikaa\\IdeaProjects\\Gym-Management-System\\Payment\\img\\discover.png"));
-                    // Check if the card number is a Diners Club Card number
-                    else if (cardnumber_field.getText().startsWith("300") || cardnumber_field.getText().startsWith("301") || cardnumber_field.getText().startsWith("302") || cardnumber_field.getText().startsWith("303") || cardnumber_field.getText().startsWith("304") || cardnumber_field.getText().startsWith("305") || cardnumber_field.getText().startsWith("309") || cardnumber_field.getText().startsWith("36") || cardnumber_field.getText().startsWith("38") || cardnumber_field.getText().startsWith("39"))
-                        cardtype.setIcon(new ImageIcon("C:\\Users\\vikaa\\IdeaProjects\\Gym-Management-System\\Payment\\img\\dinersclub.png"));
-                    else
-                        cardtype.setIcon(new ImageIcon("C:\\Users\\vikaa\\IdeaProjects\\Gym-Management-System\\Payment\\img\\invalid.png"));
+    @Override
+    public void keyReleased(KeyEvent e)
+    {
+            if (cardnumber_field.getText().length() == 4 || cardnumber_field.getText().length() == 9 || cardnumber_field.getText().length() == 14)
+            {
+                if (cardnumber_field.getText().charAt(0) == '4') {
+                    cardtype.setIcon(new ImageIcon("Payment/img/visa.png"));
                 }
+                else if (cardnumber_field.getText().startsWith("51") || cardnumber_field.getText().substring(0, 2).equals("52") || cardnumber_field.getText().substring(0, 2).equals("53") || cardnumber_field.getText().substring(0, 2).equals("54") || cardnumber_field.getText().substring(0, 2).equals("55"))
+                    cardtype.setIcon(new ImageIcon("Payment/img/mastercard.jpg"));
+                else if (cardnumber_field.getText().startsWith("34") || cardnumber_field.getText().substring(0, 2).equals("37"))
+                    //Show the image of AMEX card from the URL
+                    cardtype.setIcon(new ImageIcon("Payment/img/amex.png"));
+                else if (cardnumber_field.getText().charAt(0) == '6')
+                    cardtype.setIcon(new ImageIcon("Payment/img/discover.png"));
+                    // Check if the card number is a Diners Club Card number
+                else if (cardnumber_field.getText().startsWith("300") || cardnumber_field.getText().startsWith("301") || cardnumber_field.getText().startsWith("302") || cardnumber_field.getText().startsWith("303") || cardnumber_field.getText().startsWith("304") || cardnumber_field.getText().startsWith("305") || cardnumber_field.getText().startsWith("309") || cardnumber_field.getText().startsWith("36") || cardnumber_field.getText().startsWith("38") || cardnumber_field.getText().startsWith("39"))
+                    cardtype.setIcon(new ImageIcon("Payment/img/dinersclub.png"));
+                else
+                    cardtype.setIcon(new ImageIcon("Payment/img/invalid.png"));
             }
-        });
+        }
+});
 
 
         // Key Listener for Card Number to allow only numbers
@@ -316,29 +352,89 @@ cardnumber_field.addKeyListener(new KeyAdapter() {
                     terms.requestFocus();
                 }
 
+                if(!isValidExpiryDate(expiry_field.getText(),expiry_field1.getText()))
+                {
+                    showMessageDialog(f,"Invalid Expiry Date. Please enter a valid expiry date");
+                    expiry_field.requestFocus();
+                }
+
+                if(!isValidCVV(cvv_field.getText()))
+                {
+                    showMessageDialog(f,"Invalid CVV. Please enter a valid CVV");
+                    cvv_field.requestFocus();
+                }
+
+                if(!terms.isSelected())
+                {
+                    showMessageDialog(f,"Please accept the Terms & Conditions & Privacy Policy");
+                    terms.requestFocus();
+                }
+
                 if(!(firstname_field.getText().equals("") || email_field.getText().equals("") || nameoncard_field.getText().equals("") || cardnumber_field.getText().equals("") || expiry_field.getText().equals("") || expiry_field1.getText().equals("") || cvv_field.getText().equals("")))
                 {
-                    if(isValidEmailAddress(email_field.getText()) && terms.isSelected())
+                    if(isValidEmailAddress(email_field.getText()) && terms.isSelected() &&
+                            isValidExpiryDate(expiry_field.getText(),expiry_field1.getText()) && isValidCardNumber(cardnumber_field.getText()) && isValidCVV(cvv_field.getText()))
                     {
-                        showMessageDialog(f,"Your payment has been successfully processed");
+                        try
+                        {
+                            Connection con2 = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
+                            // Select the username from the tbllogin table where the user id is the same as the user id from the database
+                            String sql2 ="SELECT a.USER_NAME,a.PASSWORD,b.FIRST_NAME,b.LAST_NAME, b.EMAIL_ID FROM  TBLLOGIN a, TBLUSERS b WHERE b.EMAIL_ID = '"+email_field.getText()+"' AND a.USER_ID = b.USER_ID";
+                            Statement sta = con2.createStatement();
+                            int y = sta.executeUpdate(sql2);
+
+                            if (y > 0)
+                            {
+                                // Get the username from the database and call the Mail class to send the username to the email
+                                ResultSet rs2 = sta.executeQuery(sql2);
+                                while (rs2.next())
+                                {
+                            // Call the generateVerificationCode method to generate a verification code
+                                String first_name = rs2.getString(3);
+                                String last_name = rs2.getString(4);
+                                String full_name = first_name + " " + last_name;
+                                String email1 = rs2.getString(5);
+                                String subject = "Your payment to Gym Vale has been processed successfully";
+
+                                String date = java.time.LocalDate.now().toString();
+
+                                    String message = "\nHi " + full_name + ",\n\nThis email confirms that your payment of Rs.1000/- on "
+                                            + date + " has been processed successfully.\n\n Thank you for your payment!" +
+                                    "\n\nThank you,\nGym Vale Team ";
+
+                                // Call the sendMail method to send the email
+                                Mailer mailer = new Mailer();
+                                mailer.Send_Email(email1,subject,message);
+                                // Show the dialog box to the user that the password has been changed
+                                showMessageDialog(null, "Your payment has been processed successfully");
+                                // Set all the fields to setEditable to false
+                                submit.setVisible(false);
+                                f.dispose();
+                        }
+                    } else
+                            {
+                                    showMessageDialog(f,"Payment Failed! Retry Again");
+                                    // Set all fileds to empty
+                                    firstname_field.setText("");
+                                    email_field.setText("");
+                                    nameoncard_field.setText("");
+                                    cardnumber_field.setText("");
+                                    expiry_field.setText("");
+                                    expiry_field1.setText("");
+                                    cvv_field.setText("");
+                                    terms.setSelected(false);
+                                    firstname_field.requestFocus();
+                            }
+
                     }
-                }
-                else
-                {
-                    showMessageDialog(f,"Payment Failed! Retry Again");
-                    // Set all fileds to empty
-                    firstname_field.setText("");
-                    email_field.setText("");
-                    nameoncard_field.setText("");
-                    cardnumber_field.setText("");
-                    expiry_field.setText("");
-                    expiry_field1.setText("");
-                    cvv_field.setText("");
-                    terms.setSelected(false);
-                    firstname_field.requestFocus();
-                }
+                        catch (Exception e1)
+                        {
+                    e1.printStackTrace();
+                    }
+
             }
-        });
+        }
+        }});
 
         submit.setVisible(true);
 
@@ -349,7 +445,27 @@ cardnumber_field.addKeyListener(new KeyAdapter() {
         f.setVisible(true);
     }
 
+    private boolean isValidExpiryDate(String mm, String yyyy)
+    {
+        if(mm.length() != 2 || yyyy.length() != 4)
+            return false;
+        int month = Integer.parseInt(mm);
+        int year = Integer.parseInt(yyyy);
+        if(month < 1 || month > 12)
+            return false;
+        if(year < getCurrentYear())
+            return false;
+        return true;
+    }
+
+    // Function to get the current year from the internet
+    private int getCurrentYear()
+    {
+        Calendar cal = Calendar.getInstance();
+        return cal.get(Calendar.YEAR);
+    }
+
     public static void main(String[] args) {
-        new HomePage();
+        new PaymentPage();
     }
 }

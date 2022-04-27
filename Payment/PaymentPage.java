@@ -1,18 +1,27 @@
 package Payment;
 
 import Login.Mailer;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileOutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import static com.itextpdf.text.Image.getInstance;
+import static java.awt.Image.*;
 import static javax.swing.JOptionPane.showMessageDialog;
 public class PaymentPage
 {
@@ -394,18 +403,66 @@ cardnumber_field.addKeyListener(new KeyAdapter() {
                                 String last_name = rs2.getString(4);
                                 String full_name = first_name + " " + last_name;
                                 String email1 = rs2.getString(5);
-                                String subject = "Your payment to Gym Vale has been processed successfully";
+                                String subject = "Your payment to Gym Vale has been received successfully";
 
-                                String date = java.time.LocalDate.now().toString();
+                                // Needed DD-MM-YYYY HH:MM:SS format from the Date class
+                                String date_time = new SimpleDateFormat("DD-MM-YYYY HH:mm:ss").format(new Date());
 
                                     String message = "\nHi " + full_name + ",\n\nThis email confirms that your payment of Rs.1000/- on "
-                                            + date + " has been processed successfully.\n\n Thank you for your payment!" +
+                                            + date_time + " has been processed successfully.\n\n Please find the invoice attached below for proof of the transaction." +
+                                            " \n\n Thank you for your payment!" +
                                     "\n\nThank you,\nGym Vale Team ";
 
-                                // Call the sendMail method to send the email
-                                Mailer mailer = new Mailer();
-                                mailer.Send_Email(email1,subject,message);
-                                // Show the dialog box to the user that the password has been changed
+
+                                    // GENERATE THE PDF CONTEXTS
+                                    String path = "C:\\Users\\vikaa\\IdeaProjects\\Gym-Management-System\\Payment\\PDF Invoice\\Invoice.pdf";
+                                    Document document = new Document();
+                                    PdfWriter.getInstance(document, new FileOutputStream(path));
+                                    document.open();
+
+                                    // Add the title to the document
+                                    Paragraph title1 = new Paragraph("Payment Confirmation");
+                                    title1.setAlignment(Element.ALIGN_CENTER);
+                                    title1.setFont(FontFactory.getFont(FontFactory.COURIER, 36, Font.BOLD));
+                                    document.add(title1);
+
+                                    Paragraph title2 = new Paragraph("Thank You! Your payment has been received.");
+                                    title2.setAlignment(Element.ALIGN_CENTER);
+                                    title2.setFont(FontFactory.getFont(FontFactory.TIMES_BOLD, 25, Font.BOLD));
+                                    document.add(title2);
+
+                                    Paragraph title3 = new Paragraph("Transaction ID: " + generateTransactionId());
+                                    title3.setAlignment(Element.ALIGN_CENTER);
+                                    title3.setFont(FontFactory.getFont(FontFactory.TIMES_BOLD, 12, Font.PLAIN));
+                                    document.add(title3);
+
+                                    Paragraph title4 = new Paragraph("\nPayment Details");
+                                    title4.setAlignment(Element.ALIGN_CENTER);
+                                    title4.setFont(FontFactory.getFont(FontFactory.TIMES, 16, Font.PLAIN));
+                                    document.add(title4);
+
+                                    Paragraph title7 = new Paragraph("Payment Made on  : " + date_time +
+                                                               "\n Payment Amount : Rs.1000/-");
+                                    title7.setAlignment(Element.ALIGN_CENTER);
+                                    title7.setFont(FontFactory.getFont(FontFactory.TIMES, 16, Font.PLAIN));
+                                    document.add(title7);
+
+                                    Paragraph title5 = new Paragraph("\nPlease wait for some time for the amount to get processed and" +
+                                            " show in your account");
+                                    title5.setAlignment(Element.ALIGN_CENTER);
+                                    title5.setFont(FontFactory.getFont(FontFactory.TIMES, 16, Font.ITALIC));
+                                    document.add(title5);
+
+                                    Paragraph title6 = new Paragraph("Please contact us on our email address for any query.\n\n Thank You for using our services.");
+                                    title6.setAlignment(Element.ALIGN_CENTER);
+                                    title6.setFont(FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 16, Font.ITALIC));
+                                    document.add(title6);
+                                    document.close();
+
+                                    // Call the sendMail method to send the email
+                                    Mailer mailer = new Mailer();
+                                    mailer.Send_Email(email1,subject,message);
+
                                 showMessageDialog(null, "Your payment has been processed successfully");
                                 // Set all the fields to setEditable to false
                                 submit.setVisible(false);
@@ -463,6 +520,17 @@ cardnumber_field.addKeyListener(new KeyAdapter() {
     {
         Calendar cal = Calendar.getInstance();
         return cal.get(Calendar.YEAR);
+    }
+
+    // Function to generate a transaction id
+    private String generateTransactionId()
+    {
+        String id = "";
+        for(int i = 0; i < 10; i++)
+        {
+            id += (int)(Math.random() * 10);
+        }
+        return id;
     }
 
     public static void main(String[] args) {

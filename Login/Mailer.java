@@ -1,10 +1,13 @@
 package Login;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import java.sql.*;
-import java.util.Date;
+import javax.mail.internet.MimeMultipart;
 import java.util.Properties;
 
 public class Mailer {
@@ -27,16 +30,27 @@ public class Mailer {
             }
         });
 
+        Message msg = new MimeMessage(newsession);
         // MimeMessage is used to create the email message
         try
         {
-            final Message Demo_Message = new MimeMessage(newsession);
-            Demo_Message.setRecipient(Message.RecipientType.TO, new InternetAddress(Receiver_mail));
-            Demo_Message.setFrom(new InternetAddress(Sender));
-            Demo_Message.setSubject(Subject); // email subject
-            Demo_Message.setText(Body); // The content of email
-            Demo_Message.setSentDate(new Date());
-            Transport.send(Demo_Message);// Transport the email
+            msg.setFrom(new InternetAddress(Sender));
+            msg.setRecipient(Message.RecipientType.TO, new InternetAddress(Receiver_mail));
+            msg.setSubject(Subject);
+            Multipart multipart = new MimeMultipart();
+            MimeBodyPart textBodyPart = new MimeBodyPart();
+            textBodyPart.setText(Body);
+
+            MimeBodyPart attachmentBodyPart= new MimeBodyPart();
+            DataSource source = new FileDataSource("C:\\Users\\vikaa\\IdeaProjects\\Gym-Management-System\\Payment\\PDF Invoice\\Invoice.pdf"); // ex : "C:\\test.pdf"
+            attachmentBodyPart.setDataHandler(new DataHandler(source));
+            attachmentBodyPart.setFileName("Invoice.pdf"); // ex : "test.pdf
+
+            multipart.addBodyPart(textBodyPart);  // add the text part
+            multipart.addBodyPart(attachmentBodyPart); // add the attachement part
+
+            msg.setContent(multipart);
+            Transport.send(msg);
             System.out.println("Your Email has been sent successfully!");
         } catch (final MessagingException e)
         { // exception to catch the errors

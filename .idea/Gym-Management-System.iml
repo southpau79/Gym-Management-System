@@ -62,5 +62,28 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$USER_HOME$/OneDrive/Desktop/iText7-Core-7.1.3.zip!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="jar://$USER_HOME$/OneDrive/Desktop/iText7-Core-7.1.3.zip!/" recursive="false" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://$USER_HOME$/OneDrive/Documents/iText7-Core-7.1.3" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$USER_HOME$/OneDrive/Documents/iText7-Core-7.1.3" />
+        </SOURCES>
+        <jarDirectory url="file://$USER_HOME$/OneDrive/Documents/iText7-Core-7.1.3" recursive="false" />
+        <jarDirectory url="file://$USER_HOME$/OneDrive/Documents/iText7-Core-7.1.3" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
   </component>
 </module>

@@ -7,6 +7,7 @@ import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import Login.Mailer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -76,7 +77,8 @@ public class PaymentPage
 
 
         JLabel email,firstname,nameoncard,cardnumber,expiry,cvv;
-        JTextField email_field,firstname_field,nameoncard_field,cardnumber_field,expiry_field,cvv_field;
+        JTextField email_field,firstname_field,nameoncard_field,cardnumber_field,expiry_field;
+        JPasswordField cvv_field;
 
         //Create a  JLabel with text "Personal Information"
         JLabel info_label = new JLabel("Personal Information");
@@ -273,7 +275,7 @@ cardnumber_field.addKeyListener(new KeyAdapter() {
         expiry_field1.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if (expiry_field1.getText().length() >= 30 )
+                if (expiry_field1.getText().length() >= 4)
                     e.consume();
             }
         });
@@ -293,8 +295,10 @@ cardnumber_field.addKeyListener(new KeyAdapter() {
         cvv = new JLabel("CVV");
         cvv.setBounds(600,350,120,80);
         cvv.setFont(new Font("Calibri",Font.ITALIC,18));
-        cvv_field = new JTextField();
+        cvv_field = new JPasswordField();
         cvv_field.setBounds(600,400,50,25);
+
+
         // Key Listener for the Email TextField to limit the input to 30 characters
         cvv_field.addKeyListener(new KeyAdapter() {
             @Override
@@ -397,28 +401,30 @@ cardnumber_field.addKeyListener(new KeyAdapter() {
                             {
                                 // Get the username from the database and call the Mail class to send the username to the email
                                 ResultSet rs2 = sta.executeQuery(sql2);
-                                while (rs2.next())
-                                {
-                            // Call the generateVerificationCode method to generate a verification code
-                                String first_name = rs2.getString(3);
-                                String last_name = rs2.getString(4);
-                                String full_name = first_name + " " + last_name;
-                                String email1 = rs2.getString(5);
-                                String amount = rs2.getString(6);
-                                String membership_id = rs2.getString(7);
-                                String subject = "Your payment to Gym Vale has been received successfully";
+                                while (rs2.next()) {
+                                    // Call the generateVerificationCode method to generate a verification code
+                                    String first_name = rs2.getString(3);
+                                    String last_name = rs2.getString(4);
+                                    String full_name = first_name + " " + last_name;
+                                    String email1 = rs2.getString(5);
+                                    String amount = rs2.getString(6);
+                                    String membership_id = rs2.getString(7);
+                                    String subject = "Your payment to Gym Vale has been received successfully";
 
-                                // Get the local date and time and format it to a string
-                                    String date_time = new SimpleDateFormat("DD-MM-YYYY HH:mm:ss").format(new Date());
+                                    // Get the current date and time from the oracle database
+                                    String sql3 = "SELECT TO_CHAR(SYSDATE,'DD-MM-YYYY HH24:MI:SS') FROM DUAL";
+                                    Statement sta3 = con2.createStatement();
+                                    ResultSet rs3 = sta3.executeQuery(sql3);
+                                    String current_date_time = null;
+                                    while (rs3.next()) {
+                                        current_date_time = rs3.getString(1);
+                                    }
 
 
-
-
-
-                                String message = "\nHi " + full_name + ",\n\nThis email confirms that your payment of Rs."+ amount + "/- on "
-                                            + date_time + " has been processed successfully.\n\n Please find the invoice attached below for proof of the transaction." +
+                                    String message = "\nHi " + full_name + ",\n\nThis email confirms that your payment of Rs." + amount + "/- on "
+                                            + current_date_time + " has been processed successfully.\n\n Please find the invoice attached below for proof of the transaction." +
                                             " \n\n Thank you for your payment!" +
-                                        "\n\nThank you,\nGym Vale Team ";
+                                            "\n\nThank you,\nGym Vale Team ";
 
 
                                     // GENERATE THE PDF CONTEXTS
@@ -450,19 +456,15 @@ cardnumber_field.addKeyListener(new KeyAdapter() {
                                     title4.setFont(FontFactory.getFont(FontFactory.TIMES, 16, Font.PLAIN));
                                     document.add(title4);
 
-                                    // create a variable with the same value of date_time
-                                    String date_time1 = date_time;
-                                    // Dont include the first character of the string
-                                    String date_time2 = date_time1.substring(1);
 
-                                    Paragraph title7 = new Paragraph("Payment Made on  : " + date_time2 +
-                                                               "\n Payment Amount : Rs." + amount+ "/-");
+                                    Paragraph title7 = new Paragraph("Payment Made on  : " + current_date_time +
+                                            "\n Payment Amount : Rs." + amount + "/-");
                                     title7.setAlignment(Element.ALIGN_CENTER);
                                     title7.setFont(FontFactory.getFont(FontFactory.TIMES, 16, Font.PLAIN));
                                     document.add(title7);
 
                                     Paragraph title9 = new Paragraph("Your Membership ID is : " + membership_id +
-                                            "\n Please use this Membership ID ");
+                                            "\n Please use this Membership ID to  login to the Gym Vale application.");
                                     title9.setAlignment(Element.ALIGN_CENTER);
                                     title9.setFont(FontFactory.getFont(FontFactory.TIMES, 16, Font.PLAIN));
                                     document.add(title9);
@@ -479,34 +481,31 @@ cardnumber_field.addKeyListener(new KeyAdapter() {
                                     document.add(title6);
                                     document.close();
 
-                                    try
-                                    {
+                                    try {
                                         String id = generateID();
                                         Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
                                         PreparedStatement pst;
                                         pst = connection.prepareStatement("insert into TBLPAYMENT values(?,?,?,?)");
-                                        pst.setString(1,id);
-                                        pst.setString(2, date_time);
+                                        pst.setString(1, id);
+                                        pst.setString(2, current_date_time);
                                         pst.setString(3, transactionID);
-                                        pst.setString(4,membership_id);
+                                        pst.setString(4, membership_id);
                                         pst.executeUpdate();
                                         connection.close();
-                                    }
-                                    catch (SQLException e1)
-                                    {
+                                    } catch (SQLException e1) {
                                         e1.printStackTrace();
                                     }
 
                                     // Call the sendMail method to send the email
-                                    //Mailer mailer = new Mailer();
-                                    //mailer.Send_Email(email1,subject,message);
+                                    Mailer mailer = new Mailer();
+                                    mailer.Send_Email(email1, subject, message);
 
 
-                                showMessageDialog(null, "Your payment has been processed successfully");
-                                // Set all the fields to setEditable to false
-                                submit.setVisible(false);
-                                f.dispose();
-                        }
+                                    showMessageDialog(null, "Your payment has been processed successfully");
+                                    // Set all the fields to setEditable to false
+                                    f.dispose();
+                                    submit.setVisible(false);
+                                }
                     } else
                             {
                                     showMessageDialog(f,"Payment Failed! Retry Again");
@@ -574,6 +573,7 @@ cardnumber_field.addKeyListener(new KeyAdapter() {
         }
         return sb.toString();
     }
+
 
     public static void main(String[] args) {
         new PaymentPage();

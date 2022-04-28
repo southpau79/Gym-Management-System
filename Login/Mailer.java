@@ -15,8 +15,6 @@ public class Mailer {
     static final String User_Email = "noreplytest.gymvale@gmail.com"; //your email
     static final String Password = "GymVale8068@"; // your email password
     static final String Sender = "noreplytest.gymvale@gmail.com"; // Insert Your email again
-    // Insert Receiver's Email
-    final String Email_Subject = "Gym Vale - Forgot Username"; // Insert Email Subject
 
 
     public void Send_Email(String Receiver_mail, String Subject, String Body)
@@ -42,9 +40,9 @@ public class Mailer {
             textBodyPart.setText(Body);
 
             MimeBodyPart attachmentBodyPart= new MimeBodyPart();
-            DataSource source = new FileDataSource("C:\\Users\\vikaa\\IdeaProjects\\Gym-Management-System\\Payment\\PDF Invoice\\Invoice.pdf"); // ex : "C:\\test.pdf"
+            DataSource source = new FileDataSource("Payment/PDF Invoice/Invoice.pdf"); // ex : "C:\\test.pdf"
             attachmentBodyPart.setDataHandler(new DataHandler(source));
-            attachmentBodyPart.setFileName("Invoice.pdf"); // ex : "test.pdf
+            attachmentBodyPart.setFileName("Receipt.pdf"); // ex : "test.pdf
 
             multipart.addBodyPart(textBodyPart);  // add the text part
             multipart.addBodyPart(attachmentBodyPart); // add the attachement part
@@ -68,7 +66,13 @@ public class Mailer {
         Mail_Prop.put("mail.smtp.auth", true);
         Mail_Prop.put("mail.smtp.starttls.enable", true);
         Mail_Prop.put("mail.smtp.ssl.protocols", "TLSv1.2");
+        Mail_Prop.put("mail.smtp.port", "25");
         return Mail_Prop;
+    }
+
+    public static void main(String[] args) {
+        Mailer obj = new Mailer();
+        obj.Send_Email("vikaasaboy@gmail.com", "Test Subject", "Test Body");
     }
 
 }

@@ -168,6 +168,8 @@ public class GetDetails
                         PaymentPage obj = new PaymentPage();
                         obj.main(null);
                         connection.close();
+                        // Close the frame
+                        f.dispose();
                     }
                     catch (SQLException e1)
                     {

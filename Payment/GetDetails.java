@@ -4,6 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Random;
 
 public class GetDetails
 {
@@ -126,11 +131,70 @@ public class GetDetails
         enddateField.setText(java.time.LocalDate.now().toString());
         f.add(enddateField);
 
+        JButton submit = new JButton("Submit");
+        submit.setBounds(575,400,100,50);
+        submit.setFont(new Font("Calibri",Font.BOLD,18));
+        submit.setBackground(Color.green);
+        submit.setForeground(Color.white);
+        f.add(submit);
+
+        // Add Listener to the Submit button
+        submit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if(SubscriptionList.getSelectedItem().toString() == "Please Select")
+                {
+                    JOptionPane.showMessageDialog(f , "Please select a subscription model to subscribe!");
+                }
+                else
+                {
+                    // Create a new connection to the oracle database
+                    try
+                    {
+                        String id = generateID();
+                        Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
+                        PreparedStatement pst;
+                        pst = connection.prepareStatement("insert into TBLMEMBERSHIP values(?,?,?,?)");
+                        pst.setString(1,id);
+                        pst.setString(2, chargeField.getText());
+                        pst.setString(3, dateField.getText());
+                        pst.setString(4,enddateField.getText());
+                        pst.executeUpdate();
+
+
+                        JOptionPane.showMessageDialog(submit, "Your Subscription details is stored... Please proceed to payment ");
+                        // Create the object of the Payment class
+                        PaymentPage obj = new PaymentPage();
+                        obj.main(null);
+                        connection.close();
+                    }
+                    catch (SQLException e1)
+                    {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+
+         });
+
         // Frame Properties
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setSize(1600,800);
         f.setLayout(null);
         f.setVisible(true);
+    }
+
+    // Create a function that generates unique Membership ID of exactly 5 digits
+    public static String generateID()
+    {
+        String id = "";
+        Random rand = new Random();
+        for(int i = 0; i < 5; i++)
+        {
+            id += rand.nextInt(10);
+        }
+        return id;
     }
 
     public static void main(String[] args) {

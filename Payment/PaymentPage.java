@@ -15,14 +15,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import static com.itextpdf.text.Image.getInstance;
-import static java.awt.Image.*;
 import static javax.swing.JOptionPane.showMessageDialog;
+
 public class PaymentPage
 {
     public boolean isValidEmailAddress(String email) {
@@ -415,7 +413,7 @@ cardnumber_field.addKeyListener(new KeyAdapter() {
 
 
                                     // GENERATE THE PDF CONTEXTS
-                                    String path = "C:\\Users\\vikaa\\IdeaProjects\\Gym-Management-System\\Payment\\PDF Invoice\\Invoice.pdf";
+                                    String path = "Payment/PDF Invoice/Invoice.pdf";
                                     Document document = new Document();
                                     PdfWriter.getInstance(document, new FileOutputStream(path));
                                     document.open();

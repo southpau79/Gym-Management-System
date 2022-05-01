@@ -60,13 +60,13 @@ public class Mailer {
     // The permanent  set of properties containing string keys, the following
     // setting the properties for SMPT function
     public Properties Mail_Properties() {
-        final Properties Mail_Prop = new Properties();
+        Properties Mail_Prop = new Properties();
         Mail_Prop.put("mail.smtp.host", "smtp.gmail.com");
-        Mail_Prop.put("mail.smtp.post", "587");
-        Mail_Prop.put("mail.smtp.auth", true);
-        Mail_Prop.put("mail.smtp.starttls.enable", true);
+        Mail_Prop.put("mail.smtp.socketFactory.port", "465");
+        Mail_Prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         Mail_Prop.put("mail.smtp.ssl.protocols", "TLSv1.2");
-        Mail_Prop.put("mail.smtp.port", "25");
+        Mail_Prop.put("mail.smtp.auth", "true");
+        Mail_Prop.put("mail.smtp.port", "465");
         return Mail_Prop;
     }
 

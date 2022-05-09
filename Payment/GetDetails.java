@@ -164,12 +164,12 @@ public class GetDetails
 
 
                         JOptionPane.showMessageDialog(submit, "Your Subscription details is stored... Please proceed to payment ");
-                        // Create the object of the Payment class
-                        PaymentPage obj = new PaymentPage();
-                        obj.main(null);
+                       // Close this frame
+                        f.setVisible(false);
+                        // Show the Payment frame
+                        PaymentPage payment = new PaymentPage();
+                        payment.main(null);
                         connection.close();
-                        // Close the frame
-                        f.dispose();
                     }
                     catch (SQLException e1)
                     {

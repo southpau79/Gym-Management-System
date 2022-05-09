@@ -395,7 +395,8 @@ public class GetBasicDetails
                     String State = state1.getText();
                     String Gender = genderList.getSelectedItem().toString();
 
-                    try {
+                    try
+                    {
                         Connection connection = (Connection) DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl",
                                 "system", "orcl");
 

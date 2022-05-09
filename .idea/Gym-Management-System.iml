@@ -78,7 +78,16 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/OneDrive/Documents/javax-crypto.jar/javax-crypto.jar!/" />
+          <root url="jar://$MODULE_DIR$/JAR files/core-3.3.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/JAR files/javase-3.3.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

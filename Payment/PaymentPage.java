@@ -14,9 +14,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.FileOutputStream;
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,9 +23,8 @@ import static javax.swing.JOptionPane.showMessageDialog;
 
 public class PaymentPage
 {
-    private String id1;
 
-    public boolean isValidEmailAddress(String email) {
+    public static boolean isValidEmailAddress(String email) {
         String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
         Pattern p = Pattern.compile(ePattern);
         Matcher m = p.matcher(email);
@@ -35,7 +32,7 @@ public class PaymentPage
     }
 
     // Function to check the valid card number by using Luhr Algorithm
-    public boolean isValidCardNumber(String cardNumber) {
+    public static boolean isValidCardNumber(String cardNumber) {
         int sum = 0;
         boolean alternate = false;
         for (int i = cardNumber.length() - 1; i >= 0; i--) {
@@ -53,7 +50,7 @@ public class PaymentPage
     }
 
     // Function that checks if user enters correct CVV
-    public boolean isValidCVV(String cvv)
+    public static boolean isValidCVV(String cvv)
     {
         String ePattern = "^[0-9]{3}$";
         Pattern p = Pattern.compile(ePattern);
@@ -61,9 +58,44 @@ public class PaymentPage
         return m.matches();
     }
 
-    public PaymentPage()
+
+    private static boolean isValidExpiryDate(String mm, String yyyy)
     {
-        // Create a new frame
+        if(mm.length() != 2 || yyyy.length() != 4)
+            return false;
+        int month = Integer.parseInt(mm);
+        int year = Integer.parseInt(yyyy);
+        if(month < 1 || month > 12)
+            return false;
+        if(year < getCurrentYear())
+            return false;
+        return true;
+    }
+
+    // Function to get the current year from the internet
+    private static int getCurrentYear()
+    {
+        Calendar cal = Calendar.getInstance();
+        return cal.get(Calendar.YEAR);
+    }
+
+    // Function to generate a transaction id with alphanumeric characters
+    private static String generateTransactionId()
+    {
+        StringBuilder sb = new StringBuilder();
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        int charactersLength = characters.length();
+        for (int i = 0; i < 10; i++)
+        {
+            int index = (int) (Math.random() * charactersLength);
+            sb.append(characters.charAt(index));
+        }
+        return sb.toString();
+    }
+
+
+    public static void main(String[] args)
+    {
         JFrame f =new JFrame("Forget Password");
         f.getContentPane().setBackground(new Color(230,230,0));
         f.setBackground(Color.cyan);
@@ -201,30 +233,30 @@ public class PaymentPage
                     cardnumber_field.setBorder(BorderFactory.createLineBorder(Color.red));
             }
         });
-cardnumber_field.addKeyListener(new KeyAdapter() {
-    @Override
-    public void keyReleased(KeyEvent e)
-    {
-            if (cardnumber_field.getText().length() == 4 || cardnumber_field.getText().length() == 9 || cardnumber_field.getText().length() == 14)
+        cardnumber_field.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e)
             {
-                if (cardnumber_field.getText().charAt(0) == '4') {
-                    cardtype.setIcon(new ImageIcon("Payment/img/visa.png"));
+                if (cardnumber_field.getText().length() == 4 || cardnumber_field.getText().length() == 9 || cardnumber_field.getText().length() == 14)
+                {
+                    if (cardnumber_field.getText().charAt(0) == '4') {
+                        cardtype.setIcon(new ImageIcon("Payment/img/visa.png"));
+                    }
+                    else if (cardnumber_field.getText().startsWith("51") || cardnumber_field.getText().substring(0, 2).equals("52") || cardnumber_field.getText().substring(0, 2).equals("53") || cardnumber_field.getText().substring(0, 2).equals("54") || cardnumber_field.getText().substring(0, 2).equals("55"))
+                        cardtype.setIcon(new ImageIcon("Payment/img/mastercard.jpg"));
+                    else if (cardnumber_field.getText().startsWith("34") || cardnumber_field.getText().substring(0, 2).equals("37"))
+                        //Show the image of AMEX card from the URL
+                        cardtype.setIcon(new ImageIcon("Payment/img/amex.png"));
+                    else if (cardnumber_field.getText().charAt(0) == '6')
+                        cardtype.setIcon(new ImageIcon("Payment/img/discover.png"));
+                        // Check if the card number is a Diners Club Card number
+                    else if (cardnumber_field.getText().startsWith("300") || cardnumber_field.getText().startsWith("301") || cardnumber_field.getText().startsWith("302") || cardnumber_field.getText().startsWith("303") || cardnumber_field.getText().startsWith("304") || cardnumber_field.getText().startsWith("305") || cardnumber_field.getText().startsWith("309") || cardnumber_field.getText().startsWith("36") || cardnumber_field.getText().startsWith("38") || cardnumber_field.getText().startsWith("39"))
+                        cardtype.setIcon(new ImageIcon("Payment/img/dinersclub.png"));
+                    else
+                        cardtype.setIcon(new ImageIcon("Payment/img/invalid.png"));
                 }
-                else if (cardnumber_field.getText().startsWith("51") || cardnumber_field.getText().substring(0, 2).equals("52") || cardnumber_field.getText().substring(0, 2).equals("53") || cardnumber_field.getText().substring(0, 2).equals("54") || cardnumber_field.getText().substring(0, 2).equals("55"))
-                    cardtype.setIcon(new ImageIcon("Payment/img/mastercard.jpg"));
-                else if (cardnumber_field.getText().startsWith("34") || cardnumber_field.getText().substring(0, 2).equals("37"))
-                    //Show the image of AMEX card from the URL
-                    cardtype.setIcon(new ImageIcon("Payment/img/amex.png"));
-                else if (cardnumber_field.getText().charAt(0) == '6')
-                    cardtype.setIcon(new ImageIcon("Payment/img/discover.png"));
-                    // Check if the card number is a Diners Club Card number
-                else if (cardnumber_field.getText().startsWith("300") || cardnumber_field.getText().startsWith("301") || cardnumber_field.getText().startsWith("302") || cardnumber_field.getText().startsWith("303") || cardnumber_field.getText().startsWith("304") || cardnumber_field.getText().startsWith("305") || cardnumber_field.getText().startsWith("309") || cardnumber_field.getText().startsWith("36") || cardnumber_field.getText().startsWith("38") || cardnumber_field.getText().startsWith("39"))
-                    cardtype.setIcon(new ImageIcon("Payment/img/dinersclub.png"));
-                else
-                    cardtype.setIcon(new ImageIcon("Payment/img/invalid.png"));
             }
-        }
-});
+        });
 
 
         // Key Listener for Card Number to allow only numbers
@@ -314,12 +346,12 @@ cardnumber_field.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e)
             {
-                    if(isValidCVV(cvv_field.getText()))
-                        // MAKE THE BORDER OF THE FIELD GREEN
-                        cvv_field.setBorder(BorderFactory.createLineBorder(Color.green));
-                    else
-                        cvv_field.setBorder(BorderFactory.createLineBorder(Color.red));
-                }
+                if(isValidCVV(cvv_field.getText()))
+                    // MAKE THE BORDER OF THE FIELD GREEN
+                    cvv_field.setBorder(BorderFactory.createLineBorder(Color.green));
+                else
+                    cvv_field.setBorder(BorderFactory.createLineBorder(Color.red));
+            }
         });
         f.add(cvv);
         f.add(cvv_field);
@@ -331,11 +363,11 @@ cardnumber_field.addKeyListener(new KeyAdapter() {
         // Action Listener for the Checkbox to check
         terms.addActionListener(e->
         {
-                if (terms.isSelected()) {
-                    showMessageDialog(f, "Terms & Conditions & Privacy Policy are accepted");
-                } else {
-                    showMessageDialog(f, "Terms & Conditions & Privacy Policy are not accepted");
-                }
+            if (terms.isSelected()) {
+                showMessageDialog(f, "Terms & Conditions & Privacy Policy are accepted");
+            } else {
+                showMessageDialog(f, "Terms & Conditions & Privacy Policy are not accepted");
+            }
         });
 
         JButton submit = new JButton("Submit");
@@ -503,33 +535,36 @@ cardnumber_field.addKeyListener(new KeyAdapter() {
 
                                     showMessageDialog(null, "Your payment has been processed successfully");
                                     // Set all the fields to setEditable to false
-                                    f.dispose();
                                     submit.setVisible(false);
+                                    f.dispose();
+                                    // Close the connection
+                                    con2.close();
                                 }
-                    } else
+                            } else
                             {
-                                    showMessageDialog(f,"Payment Failed! Retry Again");
-                                    // Set all fileds to empty
-                                    firstname_field.setText("");
-                                    email_field.setText("");
-                                    nameoncard_field.setText("");
-                                    cardnumber_field.setText("");
-                                    expiry_field.setText("");
-                                    expiry_field1.setText("");
-                                    cvv_field.setText("");
-                                    terms.setSelected(false);
-                                    firstname_field.requestFocus();
+                                showMessageDialog(f,"Payment Failed! Retry Again");
+                                // Set all fileds to empty
+                                firstname_field.setText("");
+                                email_field.setText("");
+                                nameoncard_field.setText("");
+                                cardnumber_field.setText("");
+                                expiry_field.setText("");
+                                expiry_field1.setText("");
+                                cvv_field.setText("");
+                                terms.setSelected(false);
+                                firstname_field.requestFocus();
                             }
 
-                    }
+
+                        }
                         catch (Exception e1)
                         {
-                    e1.printStackTrace();
-                    }
+                            e1.printStackTrace();
+                        }
 
-            }
-        }
-        }});
+                    }
+                }
+            }});
 
         submit.setVisible(true);
 
@@ -540,43 +575,5 @@ cardnumber_field.addKeyListener(new KeyAdapter() {
         f.setVisible(true);
     }
 
-    private boolean isValidExpiryDate(String mm, String yyyy)
-    {
-        if(mm.length() != 2 || yyyy.length() != 4)
-            return false;
-        int month = Integer.parseInt(mm);
-        int year = Integer.parseInt(yyyy);
-        if(month < 1 || month > 12)
-            return false;
-        if(year < getCurrentYear())
-            return false;
-        return true;
-    }
-
-    // Function to get the current year from the internet
-    private int getCurrentYear()
-    {
-        Calendar cal = Calendar.getInstance();
-        return cal.get(Calendar.YEAR);
-    }
-
-    // Function to generate a transaction id with alphanumeric characters
-    private String generateTransactionId()
-    {
-        StringBuilder sb = new StringBuilder();
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-        int charactersLength = characters.length();
-        for (int i = 0; i < 10; i++)
-        {
-            int index = (int) (Math.random() * charactersLength);
-            sb.append(characters.charAt(index));
-        }
-        return sb.toString();
-    }
-
-
-    public static void main(String[] args) {
-        new PaymentPage();
-    }
-
 }
+

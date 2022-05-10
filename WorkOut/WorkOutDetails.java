@@ -92,7 +92,6 @@ public class WorkOutDetails {
         });
         f.add(planid1);
 
-
         //Create a  JLabel with the text "Exercise Name"
         exname = new JLabel("Exercise Name : ");
         exname.setBounds(400, 230, 400, 50);

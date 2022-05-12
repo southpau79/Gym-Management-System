@@ -2,6 +2,12 @@ package DashBoard;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import Login.Login;
 
 public class UserDashBoard
 {
@@ -55,6 +61,14 @@ public class UserDashBoard
         viewProfileButton.setFont(new Font("Serif", Font.BOLD, 18));
         // Add white border to the button
         viewProfileButton.setBorder(BorderFactory.createLineBorder(Color.black));
+        viewProfileButton.addActionListener(e ->
+                {
+                   // Minimize the frame
+                    f.dispose();
+                    ViewProfileDetails ob = new ViewProfileDetails();
+                    ob.main(null);
+                });
+            // Create a new frame that contains a text label with  View Profile);
         f.add(viewProfileButton);
 
         // Create a button on the left of the frame that contains a text label with  Change Password without panel
@@ -76,6 +90,16 @@ public class UserDashBoard
         // Add white border to the button
         logoutButton.setBorder(BorderFactory.createLineBorder(Color.black));
         f.add(logoutButton);
+
+        String username = Login.getUserName();
+
+        // Add a welcome message with the username
+        JLabel welcomeLabel = new JLabel("Welcome, " + findName(username) + " :-)");
+        welcomeLabel.setBounds(680,100,400,50);
+        welcomeLabel.setFont(new Font("Serif", Font.BOLD, 22));
+        welcomeLabel.setForeground(Color.blue);
+        f.add(welcomeLabel);
+
 
         // Add a text label on the center of the frame that contains a text label
         JLabel centerLabel = new JLabel("This Gym Management System is designed with Java , and it should work");
@@ -127,6 +151,11 @@ public class UserDashBoard
         // Add white border to the button
         exitButton.setBorder(BorderFactory.createLineBorder(Color.black));
         exitButton.setVisible(true);
+        exitButton.addActionListener(e ->
+        {
+            // Exit the program
+            System.exit(0);
+        });
         f.add(exitButton);
 
         // Add a button with Main Page on the bottom left corner of the frame
@@ -141,6 +170,37 @@ public class UserDashBoard
         f.add(mainPageButton);
 
     }
+
+    // Function to find the First Name , Middle Name , Last Name  of the user by the User Name
+    public static String findName(String userName)
+    {
+        String name = "";
+        try
+        {
+            // Create a connection to the database
+            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
+            // Create a statement to execute the query
+            Statement stmt = con.createStatement();
+            // Create a query to find the First Name , Middle Name , Last Name  of the user by the User Name by joining the tblusers and tbllogin tables
+            String query = "SELECT tblusers.FIRST_NAME, tblusers.MIDDLE_NAME, tblusers.LAST_NAME FROM TBLUSERS INNER JOIN TBLLOGIN ON tblusers.USER_ID = tbllogin.USER_ID WHERE tbllogin.USER_NAME = '" + userName + "'";
+            // Execute the query
+            ResultSet rs = stmt.executeQuery(query);
+            // Get the First Name , Middle Name , Last Name  of the user by the User Name
+            while (rs.next())
+            {
+                name = rs.getString("FIRST_NAME") + " " + rs.getString("MIDDLE_NAME") + " " + rs.getString("LAST_NAME");
+            }
+            // Close the connection
+            con.close();
+            return name;
+             }
+        catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        return name;
+    }
+
 
     public static void main(String[] args) {
         new UserDashBoard();

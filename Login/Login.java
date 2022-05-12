@@ -1,6 +1,8 @@
 package Login;
 
 
+import DashBoard.UserDashBoard;
+
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -38,7 +40,7 @@ public class Login extends JFrame {
     }
 
     private static final long serialVersionUID = 1L;
-    private JTextField textField;
+    private static JTextField textField;
     private JPasswordField passwordField;
     private JButton btnNewButton;
     private JLabel label;
@@ -131,13 +133,12 @@ public class Login extends JFrame {
                     st.setString(2, password);
                     ResultSet rs = st.executeQuery();
                     if (rs.next()) {
+                        // Close the current frame
                         dispose();
-                        /*
-                        UserDashBoard ah = new UserDashBoard(userName);
-                        ah.setTitle("Welcome");
-                        ah.setVisible(true);
-                        */
                         JOptionPane.showMessageDialog(btnNewButton, "You have successfully logged in");
+                        // Open the new frame
+                        UserDashBoard ob = new UserDashBoard();
+                        ob.main(null);
                     }
                     else if (userName.trim().equals("") || password.trim().equals(""))
                         JOptionPane.showMessageDialog(null, "One Or More Fields Are Empty", "Empty Fields", 2);
@@ -220,6 +221,11 @@ public class Login extends JFrame {
         label = new JLabel("");
         label.setBounds(0, 0, 1608, 562);
         contentPane.add(label);
+    }
+
+    // Function to get the UserName typed by the user when he logs in
+    public static String getUserName() {
+        return textField.getText();
     }
 }
 

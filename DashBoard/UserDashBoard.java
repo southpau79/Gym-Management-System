@@ -5,7 +5,8 @@ import java.awt.*;
 
 public class UserDashBoard
 {
-    public static void main(String[] args) {
+    public UserDashBoard()
+    {
         JFrame f =new JFrame("User Dashboard");
         f.getContentPane().setBackground(new Color(173,216,230));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -16,9 +17,11 @@ public class UserDashBoard
        // Create a panel on the top of the frame that contains a text label with  UserPortal
         JPanel topPanel = new JPanel();
         topPanel.setBounds(0,0,1600,50);
-        // Set the background color of the panel to #67B7D1
-        topPanel.setBackground(new Color(67,183,219));
+        // Set the background color of the panel to #00308f
+        topPanel.setBackground(new Color(0,48,143));
         JLabel topLabel = new JLabel("User Portal");
+        // Set the font colour of User Portal to white
+        topLabel.setForeground(Color.white);
         topLabel.setFont(new Font("Serif", Font.BOLD, 24));
         topPanel.add(topLabel);
         f.add(topPanel);
@@ -100,35 +103,47 @@ public class UserDashBoard
         centerLabel5.setFont(new Font("Serif", Font.BOLD, 22));
         f.add(centerLabel5);
 
-        JLabel centerLabel6 = new JLabel("for newer developments of this version. Thank you for using this software.");
-        centerLabel6.setBounds(525,410,800,30);
+        JLabel centerLabel6 = new JLabel("for newer developments of this version.");
+        centerLabel6.setBounds(680,410,800,30);
         centerLabel6.setFont(new Font("Serif", Font.BOLD, 22));
         f.add(centerLabel6);
 
-        JLabel centerLabel7 = new JLabel("Team GymVale");
-        centerLabel7.setBounds(780,440,150,30);
+        JLabel centerLabel7 = new JLabel("Thank you for using our software.");
+        centerLabel7.setBounds(700,440,800,30);
         centerLabel7.setFont(new Font("Serif", Font.BOLD, 22));
         f.add(centerLabel7);
 
+        JLabel centerLabel8 = new JLabel("Team GymVale");
+        centerLabel8.setBounds(780,470,150,30);
+        centerLabel8.setFont(new Font("Serif", Font.BOLD, 22));
+        f.add(centerLabel8);
+
         // Add a button with Exit on the bottom right corner of the frame
         JButton exitButton = new JButton("Exit");
-        exitButton.setBounds(1200,620,100,50);
+        exitButton.setBounds(1200,600,100,50);
         exitButton.setBackground(new Color(95,179,206));
         exitButton.setForeground(Color.blue);
         exitButton.setFont(new Font("Serif", Font.BOLD, 18));
         // Add white border to the button
         exitButton.setBorder(BorderFactory.createLineBorder(Color.black));
+        exitButton.setVisible(true);
         f.add(exitButton);
 
         // Add a button with Main Page on the bottom left corner of the frame
         JButton mainPageButton = new JButton("Main Page");
-        mainPageButton.setBounds(50,620,100,50);
+        mainPageButton.setBounds(50,600,100,50);
         mainPageButton.setBackground(new Color(95,179,206));
         mainPageButton.setForeground(Color.blue);
         mainPageButton.setFont(new Font("Serif", Font.BOLD, 18));
         // Add white border to the button
         mainPageButton.setBorder(BorderFactory.createLineBorder(Color.black));
+        mainPageButton.setVisible(true);
         f.add(mainPageButton);
 
     }
+
+    public static void main(String[] args) {
+        new UserDashBoard();
+    }
 }
+

@@ -55,7 +55,7 @@ public static String findEmail(String username)
         return null;
     }
 
-    ResetPassword()
+    public ResetPassword()
     {
     // Create a new frame
     JFrame f =new JFrame("Login Details");

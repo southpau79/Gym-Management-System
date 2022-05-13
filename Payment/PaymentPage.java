@@ -7,7 +7,7 @@ import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import Login.Mailer;
+import Payment.Mailer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -434,7 +434,7 @@ public class PaymentPage
                                 // Get the username from the database and call the Mail class to send the username to the email
                                 ResultSet rs2 = sta.executeQuery(sql2);
                                 while (rs2.next()) {
-                                    // Call the generateVerificationCode method to generate a verification code
+
                                     String first_name = rs2.getString(3);
                                     String last_name = rs2.getString(4);
                                     String full_name = first_name + " " + last_name;

@@ -1,13 +1,12 @@
 package Payment;
 
+import Login.Login;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Random;
 
 public class GetDetails
@@ -19,6 +18,8 @@ public class GetDetails
         f.getContentPane().setBackground(new Color(230,230,0));
         f.setBackground(Color.cyan);
 
+        String userName= Login.getUserName();
+;
         // Create a new Label for the Title
         JLabel title = new JLabel("Choose your subscription",JLabel.CENTER);
         title.setBounds(500,50,400,80);
@@ -155,11 +156,13 @@ public class GetDetails
                         String id = generateID();
                         Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
                         PreparedStatement pst;
-                        pst = connection.prepareStatement("insert into TBLMEMBERSHIP values(?,?,?,?)");
+                        pst = connection.prepareStatement("insert into TBLMEMBERSHIP values(?,?,?,?,?)");
                         pst.setString(1,id);
                         pst.setString(2, chargeField.getText());
                         pst.setString(3, dateField.getText());
                         pst.setString(4,enddateField.getText());
+                        pst.setString(5, findUserID(userName));
+
                         pst.executeUpdate();
 
 
@@ -185,6 +188,31 @@ public class GetDetails
         f.setSize(1600,800);
         f.setLayout(null);
         f.setVisible(true);
+    }
+
+    // Function to find the User ID by the Username
+    public static String findUserID(String userName)
+    {
+        String userID = "";
+        try
+        {
+            // Create a connection to the database
+            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
+            // Create a statement to execute the query
+            Statement stmt = con.createStatement();
+            // Create a query to find the user id through the USERNAME by joining TBLLOGIN and TBLUSERS
+            String query = "SELECT TBLUSERS.USER_ID FROM TBLUSERS INNER JOIN TBLLOGIN ON TBLUSERS.USER_ID = TBLLOGIN.USER_ID WHERE TBLLOGIN.USER_NAME = '" + userName + "'";
+            // Execute the query
+            ResultSet rs = stmt.executeQuery(query);
+            // Get the Membership ID of the user by the User Name
+            while (rs.next())
+            {
+                userID = rs.getString("USER_ID");
+            }
+        }
+        catch (Exception e)
+        {e.printStackTrace();}
+        return userID;
     }
 
     // Create a function that generates unique Membership ID of exactly 5 digits

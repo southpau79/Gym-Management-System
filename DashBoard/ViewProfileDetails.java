@@ -49,8 +49,6 @@ public class ViewProfileDetails
         // Get the age of the user
         String age = name[5];
 
-
-
         // Add a text label with the Full Name of the user
         JLabel fullNameLabel = new JLabel("Full Name: ");
         fullNameLabel.setBounds(400, 55, 100, 50);

@@ -1,6 +1,8 @@
 package Instructor;
 
+import Login.Login;
 import Login.ResetPassword;
+import WorkOut.WorkoutPlan;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,6 +10,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+
 
 public class InstructorDashBoard
 {
@@ -41,6 +44,12 @@ public class InstructorDashBoard
         schedule.setFont(new Font("Serif", Font.BOLD, 18));
         // Add white border to the button
         schedule.setBorder(BorderFactory.createLineBorder(Color.black));
+        schedule.addActionListener(e ->
+        {
+            WorkoutPlan ob = new WorkoutPlan();
+            f.dispose();
+            ob.main(null);
+        });
         f.add(schedule);
 
         // Create a button on the left of the frame that contains a text label with  View Membership Status without panel
@@ -51,6 +60,12 @@ public class InstructorDashBoard
         view_prof.setFont(new Font("Serif", Font.BOLD, 18));
         // Add white border to the button
         view_prof.setBorder(BorderFactory.createLineBorder(Color.black));
+        view_prof.addActionListener(e ->
+        {
+            ViewProfileDetails ob = new ViewProfileDetails();
+            f.dispose();
+            ob.main(null);
+        });
         f.add(view_prof);
 
         // Create a button on the left of the frame that contains a text label with  View Profile without panel
@@ -64,8 +79,8 @@ public class InstructorDashBoard
         change_pass.addActionListener(e ->
         {
             // Minimize the frame
+            Instructor.ResetPassword ob = new Instructor.ResetPassword();
             f.dispose();
-            ResetPassword ob = new ResetPassword();
             ob.main(null);
         });
         // Create a new frame that contains a text label with  View Profile);
@@ -84,10 +99,19 @@ public class InstructorDashBoard
                 {
                     // Minimize the frame
                     f.dispose();
-                    Login.Login ob = new Login.Login();
+                    Login ob = new Login();
                     ob.main(null);
                 });
         f.add(logout);
+
+        String username = Login.getUserName();
+
+        // Add a welcome message with the username
+        JLabel welcomeLabel = new JLabel("Welcome, " + findName(username) + " :-)");
+        welcomeLabel.setBounds(680, 100, 400, 50);
+        welcomeLabel.setFont(new Font("Serif", Font.BOLD, 22));
+        welcomeLabel.setForeground(Color.blue);
+        f.add(welcomeLabel);
 
         // Create a button on the left of the frame that contains a text label with  Logout without panel
         JButton main_menu = new JButton("Main Menu");
@@ -97,11 +121,14 @@ public class InstructorDashBoard
         main_menu.setFont(new Font("Serif", Font.BOLD, 18));
         // Add white border to the button
         main_menu.setBorder(BorderFactory.createLineBorder(Color.black));
+        main_menu.addActionListener(e ->
+        {
+            // Minimize the frame
+            f.dispose();
+            InstructorDashBoard ob = new InstructorDashBoard();
+            ob.main(null);
+        });
         f.add(main_menu);
-
-        //  String username = Login.getUserName();
-
-
 
         // Add a text label on the center of the frame that contains a text label
         JLabel centerLabel = new JLabel("This Gym Management System is designed with Java , and it should work");
@@ -144,6 +171,7 @@ public class InstructorDashBoard
         centerLabel8.setFont(new Font("Serif", Font.BOLD, 22));
         f.add(centerLabel8);
 
+
         // Add a button with Exit in the bottom right corner of the frame
         JButton exitButton = new JButton("Exit");
         exitButton.setBounds(1200, 600, 100, 50);
@@ -160,12 +188,38 @@ public class InstructorDashBoard
         });
         f.add(exitButton);
 
-        // Add a button with Main Page in the bottom left corner of the frame
 
     }
 
+    private static String findName(String userName)
+    {
+        String name = "";
+        try
+        {
+            // Create a connection to the database
+            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "orcl");
+            // Create a statement to execute the query
+            Statement stmt = con.createStatement();
+            // Create a query to find the First Name , Middle Name , Last Name  of the user by the User Name by joining the tblusers and tblinstuctor tables
+            String query = "SELECT tblusers.FIRST_NAME, tblusers.MIDDLE_NAME, tblusers.LAST_NAME FROM TBLUSERS INNER JOIN TBLINSTRUCTOR ON tblusers.USER_ID = TBLINSTRUCTOR.USER_ID WHERE TBLINSTRUCTOR.USER_NAME = '" + userName + "'";
+            // Execute the query
+            ResultSet rs = stmt.executeQuery(query);
+            // Get the First Name , Middle Name , Last Name  of the user by the User Name
+            while (rs.next())
+            {
+                name = rs.getString("FIRST_NAME") + " " + rs.getString("MIDDLE_NAME") + " " + rs.getString("LAST_NAME");
+            }
+            // Close the connection
+            con.close();
+            return name;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return name;
+    }
 
-    // Function to find the First Name , Middle Name , Last Name  of the user by the User Name
 
 
     public static void main(String[] args) {

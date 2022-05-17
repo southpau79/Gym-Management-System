@@ -1,5 +1,7 @@
 package Login;
 
+import Member.UserDashBoard;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -59,28 +61,39 @@ public static String findEmail(String username)
     {
     // Create a new frame
     JFrame f =new JFrame("Login Details");
-        f.getContentPane().setBackground(new Color(230,230,0));
+    // Set the backgound of the frame to #0286DE
+    f.getContentPane().setBackground(new Color(0, 134, 222));
+
         f.setBackground(Color.cyan);
 
-    // Create a new Label for the Title
-    JLabel title = new JLabel("Reset Password",JLabel.CENTER);
-        title.setBounds(500,10,400,50);
-        title.setFont(new Font("Comic Sans MS", Font.BOLD, 30));
-        title.setForeground(Color.BLUE);
-        f.add(title);
+        // Create a panel on the top of the frame that contains a text label with  UserPortal
+        JPanel topPanel = new JPanel();
+        topPanel.setBounds(0, 0, 1600, 50);
+        // Set the background color of the panel to #0286DE
+        topPanel.setBackground(new Color(132,222,2));
+        JLabel topLabel = new JLabel("Reset Password");
+        // Set the font colour of User Portal to #7E014C
+        topLabel.setForeground(new Color(126, 1, 76));
+        topLabel.setFont(new Font("Serif", Font.BOLD, 24));
+        topPanel.add(topLabel);
+        f.add(topPanel);
 
     // Declaring all the labels,text-fields and password fields
-    JLabel username, password, password_confirm,oldpassword;
+    JLabel username, password, password_confirm;
     JTextField username_field;
     JPasswordField passwordField, passwordField1,oldpassword_field;
 
 
     username = new JLabel("Enter Username: *");
         username.setBounds(400, 150, 170, 80);
-        username.setFont(new Font("Calibri", Font.ITALIC, 22));
+        username.setFont(new Font("Serif", Font.BOLD, 18));;
+        // Set the font colour of username to #5A02DE
+        username.setForeground(Color.blue);
         f.add(username);
         username_field = new JTextField();
         username_field.setBounds(600, 173, 200, 25);
+        username_field.setBorder(BorderFactory.createLineBorder(Color.black));
+        username_field.setFont(new Font("Serif", Font.PLAIN,18));
 
     // KeyListener for checking if username is entered on pressing the check button
         username_field.addKeyListener(new KeyAdapter() {
@@ -108,7 +121,7 @@ public static String findEmail(String username)
     // Create label with "enter Strong Password Constraints" left side of the password label
     JLabel password_constraints = new JLabel("  Use a variety of characters including letters, numbers, symbols, and upper and lower case. ");
         password_constraints.setBounds(100, 70, 800, 80);
-        password_constraints.setFont(new Font("Calibri", Font.BOLD, 20));
+        password_constraints.setFont(new Font("Serif", Font.BOLD, 18));
     // Add colour to the label to #028A0F
         password_constraints.setForeground(new Color(2, 138, 15));
     // Add surrounding border to the label only sourrounding the text
@@ -119,13 +132,17 @@ public static String findEmail(String username)
 
     password = new JLabel("Enter New Password: *");
         password.setBounds(400, 250, 200, 80);
-        password.setFont(new Font("Calibri", Font.ITALIC, 20));
+        password.setFont(new Font("Serif", Font.BOLD, 18));
+        // Set the font colour of password to #5A02DE
+        password.setForeground(Color.blue);
         f.add(password);
 
     passwordField = new JPasswordField();
     // Set the text colour to #ec3b83
         passwordField.setForeground(new Color(236, 59, 131));
         passwordField.setBounds(600, 273, 200, 25);
+        passwordField.setBorder(BorderFactory.createLineBorder(Color.black));
+        passwordField.setFont(new Font("Serif", Font.PLAIN,18));
     // Display the dialog box if the length of the password is less than 10
         passwordField.addKeyListener(new KeyAdapter() {
     public void keyTyped(KeyEvent e) {
@@ -173,10 +190,14 @@ public static String findEmail(String username)
 
     password_confirm= new JLabel("Confirm New Password: *");
         password_confirm.setBounds(400,300,200,80);
-        password_confirm.setFont(new Font("Calibri", Font.ITALIC, 18));
+        password_confirm.setFont(new Font("Serif", Font.BOLD, 18));
+        // Set the font colour of password_confirm to #5A02DE
+        password_confirm.setForeground(Color.blue);
         f.add(password_confirm);
     passwordField1 = new JPasswordField();
         passwordField1.setBounds(600,323,200,25);
+        passwordField1.setBorder(BorderFactory.createLineBorder(Color.black));
+        passwordField1.setFont(new Font("Serif", Font.PLAIN,18));
         passwordField1.addKeyListener(new KeyAdapter() {
     public void keyTyped(KeyEvent e) {
         if (String.valueOf(passwordField1.getPassword()).length() >= 30)
@@ -224,16 +245,27 @@ public static String findEmail(String username)
 
     JLabel RoleID = new JLabel("Old Password: *");
         RoleID.setBounds(400,200,200,80);
-        RoleID.setFont(new Font("Calibri", Font.ITALIC, 22));
+        RoleID.setFont(new Font("Serif", Font.BOLD, 18));
+        // Set the text colour to blue;
+        RoleID.setForeground(Color.blue);
         f.add(RoleID);
 
     oldpassword_field = new JPasswordField();
     oldpassword_field.setBounds(600,223,200,25);
+    oldpassword_field.setBorder(BorderFactory.createLineBorder(Color.black));
+    // Set the font to Serif
+    oldpassword_field.setFont(new Font("Serif", Font.PLAIN, 18));
     f.add(oldpassword_field);
 
     // To add a button to display password when the user clicks on it
     JButton show_password = new JButton("Show Password");
         show_password.setBounds(850, 223, 150, 25);
+        show_password.setBackground(new Color(95, 179, 206));
+        show_password.setForeground(Color.blue);
+        show_password.setFont(new Font("Serif", Font.BOLD, 18));
+        // Add white border to the button
+        show_password.setBorder(BorderFactory.createLineBorder(Color.black));
+
     // When the user clicks on the button, then display the password
         show_password.addActionListener(new ActionListener() {
     public void actionPerformed(ActionEvent e) {
@@ -256,6 +288,11 @@ public static String findEmail(String username)
 
     JButton Check = new JButton("Verify Account");
         Check.setBounds(850,168,170,25);
+        Check.setBackground(new Color(95, 179, 206));
+        Check.setForeground(Color.blue);
+        Check.setFont(new Font("Serif", Font.BOLD, 18));
+        // Add white border to the button
+        Check.setBorder(BorderFactory.createLineBorder(Color.black));
         f.add(Check);
     // Add a KeyListener to the button to check if the username and his old password are correct
         Check.addActionListener(new ActionListener() {
@@ -379,6 +416,11 @@ public static String findEmail(String username)
 
     JButton Register = new JButton("Change Password");
         Register.setBounds(500,390,200,25);
+        Register.setBackground(new Color(95, 179, 206));
+        Register.setForeground(Color.blue);
+        Register.setFont(new Font("Serif", Font.BOLD, 18));
+        // Add white border to the button
+        Register.setBorder(BorderFactory.createLineBorder(Color.black));
         f.add(Register);
         Register.addActionListener(e ->
     {
@@ -471,7 +513,12 @@ public static String findEmail(String username)
 
     JButton cancel = new JButton("Exit");
         cancel.setBounds(740,390,100,30);
-    // To create a dialog box with yes or no options for the cancel button
+        cancel.setBackground(new Color(95, 179, 206));
+        cancel.setForeground(Color.blue);
+        cancel.setFont(new Font("Serif", Font.BOLD, 18));
+        // Add white border to the button
+        cancel.setBorder(BorderFactory.createLineBorder(Color.black));
+        // To create a dialog box with yes or no options for the cancel button
         cancel.addActionListener(e -> {
     int dialogButton = YES_NO_OPTION;
     int dialogResult = showConfirmDialog(null, "Are you sure you want to exit from the application ?", "Warning", dialogButton);
@@ -488,23 +535,19 @@ public static String findEmail(String username)
         f.add(cancel);
 
     // Creating the button to go back to the previous frame
-    JButton back = new JButton("Back");
+    JButton back = new JButton("Main Page");
         back.setBounds(320,390,100,30);
+        back.setForeground(Color.blue);
+        back.setFont(new Font("Serif", Font.BOLD, 18));
+        // Add white border to the button
+        back.setBorder(BorderFactory.createLineBorder(Color.black));
     // To move to previous page
         back.addActionListener(e -> {
-    f.dispose();
-    new Login();
-    Login.main(null);
-}
+        f.dispose();
+                    UserDashBoard ob = new UserDashBoard();
+                    ob.main(null);}
         );
-    // Change back button style
-        back.setBackground(Color.WHITE);
-        back.setBorder(BorderFactory.createMatteBorder(1,1,1,1,Color.BLACK));
-        back.setFont(new Font("Arial", Font.BOLD, 12));
-    // Back Button Text Color
-        back.setForeground(Color.blue);
         f.add(back);
-
 
     JLabel label = new JLabel();
         f.add(label);
@@ -513,6 +556,7 @@ public static String findEmail(String username)
         f.setLayout(null);
         f.setVisible(true);
     }
+
     public static void main(String[] args) {
         new ResetPassword();
     }

@@ -1,5 +1,7 @@
 package WorkOut;
 
+import Instructor.InstructorDashBoard;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -132,7 +134,13 @@ public class WorkoutPlan {
         f.add(plan_name_txt);
 
         JButton btn = new JButton("Submit");
-        btn.setBounds(600, 450, 100, 25);
+        btn.setBounds(600, 400, 100, 50);
+        btn.setFont(new Font("Serif", Font.BOLD, 20));
+        btn.setBackground(new Color(255, 153, 102));
+        btn.setForeground(Color.blue);
+        // Add white border to the button
+        btn.setBorder(BorderFactory.createLineBorder(Color.black));
+        btn.setVisible(true);
         btn.addActionListener(e ->
         {
             // Check if the text fields are filled and if not display an error message
@@ -190,6 +198,43 @@ public class WorkoutPlan {
             }
         });
         f.add(btn);
+
+        // Add a button that will allow the user to go back to the Main Page
+        JButton backButton = new JButton("Main Page");
+        backButton.setBounds(450, 400, 100, 50);
+        backButton.setFont(new Font("Serif", Font.BOLD, 20));
+        backButton.setBackground(new Color(255, 153, 102));
+        backButton.setForeground(Color.blue);
+        // Add white border to the button
+        backButton.setBorder(BorderFactory.createLineBorder(Color.black));
+        backButton.setVisible(true);
+        backButton.addActionListener(e ->
+        {
+            // Close the current frame
+            // Open the Main Page
+            InstructorDashBoard ob = new InstructorDashBoard();
+            f.dispose();
+            ob.main(null);
+        });
+        f.add(backButton);
+
+        // Add a button that will allow the user to  exit the application
+        JButton exitButton = new JButton("Exit");
+        exitButton.setBounds(750, 400, 100, 50);
+        exitButton.setFont(new Font("Serif", Font.BOLD, 20));
+        exitButton.setBackground(new Color(255, 153, 102));
+        exitButton.setForeground(Color.blue);
+        // Add white border to the button
+        exitButton.setBorder(BorderFactory.createLineBorder(Color.black));
+        exitButton.setVisible(true);
+        exitButton.addActionListener(e ->
+        {
+            // Close the current frame
+            f.dispose();
+            // Exit the application
+            System.exit(0);
+        });
+        f.add(exitButton);
 
         f.setSize(1600,1600);
         f.setLayout(null);

@@ -1,7 +1,8 @@
 package Login;
 
 
-import DashBoard.UserDashBoard;
+import Instructor.InstructorDashBoard;
+import Member.UserDashBoard;
 
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -42,7 +43,7 @@ public class Login extends JFrame {
     private static final long serialVersionUID = 1L;
     private static JTextField textField;
     private JPasswordField passwordField;
-    private JButton btnNewButton;
+    private JButton btnUserLogin;
     private JLabel label;
     private JPanel contentPane;
     private JButton btnForgetPassword;
@@ -112,14 +113,15 @@ public class Login extends JFrame {
         lblPassword.setForeground(new Color(178,34,34));
         contentPane.add(lblPassword);
 
-        btnNewButton = new JButton("Login");
-        btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 26));
-        btnNewButton.setForeground(new Color(174,34,34));
-        btnNewButton.setBackground(new Color(0,191,255));
-        btnNewButton.setBounds(545, 392, 162, 73);
-        btnNewButton.addActionListener(new ActionListener() {
+        btnUserLogin = new JButton("Login");
+        btnUserLogin.setFont(new Font("Tahoma", Font.PLAIN, 26));
+        btnUserLogin.setForeground(new Color(174,34,34));
+        btnUserLogin.setBackground(new Color(0,191,255));
+        btnUserLogin.setBounds(545, 392, 162, 73);
+        btnUserLogin.addActionListener(new ActionListener() {
 
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e)
+            {
                 String userName = textField.getText();
                 String password = String.valueOf(passwordField.getPassword());
                 try {
@@ -135,7 +137,7 @@ public class Login extends JFrame {
                     if (rs.next()) {
                         // Close the current frame
                         dispose();
-                        JOptionPane.showMessageDialog(btnNewButton, "You have successfully logged in");
+                        JOptionPane.showMessageDialog(btnUserLogin, "You have successfully logged in");
                         // Open the new frame
                         UserDashBoard ob = new UserDashBoard();
                         ob.main(null);
@@ -143,14 +145,14 @@ public class Login extends JFrame {
                     else if (userName.trim().equals("") || password.trim().equals(""))
                         JOptionPane.showMessageDialog(null, "One Or More Fields Are Empty", "Empty Fields", 2);
                     else
-                        JOptionPane.showMessageDialog(btnNewButton, "Wrong Username & Password");
+                        JOptionPane.showMessageDialog(btnUserLogin, "Wrong Username & Password");
                 } catch (SQLException sqlException) {
                     sqlException.printStackTrace();
                 }
             }
         });
 
-        contentPane.add(btnNewButton);
+        contentPane.add(btnUserLogin);
 
         btnForgetPassword = new JButton("Forget Password");
         btnForgetPassword.setFont(new Font("Tahoma", Font.PLAIN, 18));
@@ -160,18 +162,17 @@ public class Login extends JFrame {
         btnForgetPassword.addActionListener( e ->
         {
             dispose();
-         /*   ForgetPassword ob = new ForgetPassword();
-            ob.main(null);
-          */
+             ForgetPassword ob = new ForgetPassword();
+             ob.main(null);
         });
         contentPane.add(btnForgetPassword);
 
-        JButton btnAdminLogin = new JButton("Admin Login");
-        btnAdminLogin.setFont(new Font("Tahoma", Font.PLAIN, 18));
-        btnAdminLogin.setBounds(40, 392, 250, 73);
-        btnAdminLogin.setForeground(new Color(174,34,34));
-        btnAdminLogin.setBackground(new Color(0,191,255));
-        btnAdminLogin.addActionListener(e ->
+        JButton btnInstructorLogin = new JButton("Instructor Login");
+        btnInstructorLogin.setFont(new Font("Tahoma", Font.PLAIN, 18));
+        btnInstructorLogin.setBounds(40, 392, 250, 73);
+        btnInstructorLogin.setForeground(new Color(174,34,34));
+        btnInstructorLogin.setBackground(new Color(0,191,255));
+        btnInstructorLogin.addActionListener(e ->
         {
             String userName = textField.getText();
             String password = String.valueOf(passwordField.getPassword());
@@ -180,29 +181,29 @@ public class Login extends JFrame {
                         "system", "orcl");
 
                 PreparedStatement st = (PreparedStatement) connection
-                        .prepareStatement("Select USER_NAME, PASSWORD from TBLLOGIN where USER_NAME=? and PASSWORD=?");
+                        .prepareStatement("Select USER_NAME, PASSWORD from TBLINSTRUCTOR where USER_NAME=? and PASSWORD=?");
 
                 st.setString(1, userName);
                 st.setString(2, password);
                 ResultSet rs = st.executeQuery();
-                if (rs.next()) {
+                if (rs.next())
+                {
+                    JOptionPane.showMessageDialog(btnUserLogin, "You have successfully logged in");
                     dispose();
-                    /*
-                    AdminDashBoard ah = new AdminDashBoard();
-                    ah.main(null);
-                    */
-                    JOptionPane.showMessageDialog(btnNewButton, "You have successfully logged in");
+                    InstructorDashBoard ob = new InstructorDashBoard();
+                    ob.main(null);
+
 
                 }
                 else if (userName.trim().equals("") || password.trim().equals(""))
                     JOptionPane.showMessageDialog(null, "One Or More Fields Are Empty", "Empty Fields", 2);
                 else
-                    JOptionPane.showMessageDialog(btnNewButton, "Wrong Admin Credentials !");
+                    JOptionPane.showMessageDialog(btnUserLogin, "Wrong Instructor Credentials !");
             } catch (SQLException sqlException) {
                 sqlException.printStackTrace();
             }
         });
-        contentPane.add(btnAdminLogin);
+        contentPane.add(btnInstructorLogin);
 
 
         JButton btnRegister = new JButton("New Account");

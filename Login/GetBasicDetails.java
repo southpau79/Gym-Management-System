@@ -429,24 +429,6 @@ public class GetBasicDetails
         submit.setForeground(Color.blue);
         f.add(submit);
 
-        // Creating the button to cancel the action
-        JButton cancel = new JButton("Exit");
-        cancel.setBounds(920,600,100,30);
-        // To create a dialog box with yes or no options for the cancel button
-        cancel.addActionListener(e -> {
-            int dialogButton = JOptionPane.YES_NO_OPTION;
-            int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit from the application ?", "Warning", dialogButton);
-            if (dialogResult == JOptionPane.YES_OPTION) {
-                f.dispose();
-            }
-        });
-        // Change cancel button style
-        cancel.setBackground(Color.WHITE);
-        cancel.setBorder(BorderFactory.createMatteBorder(1,1,1,1,Color.BLACK));
-        cancel.setFont(new Font("Arial", Font.BOLD, 12));
-        // Submit Button Text Color
-        cancel.setForeground(Color.blue);
-        f.add(cancel);
 
         // Creating the button to go back to the previous frame
         JButton back = new JButton("Back");
@@ -454,8 +436,8 @@ public class GetBasicDetails
         // To move to previous page
         back.addActionListener(e -> {
             f.dispose();
-            new Login();
-            Login.main(null);
+            Login ob = new Login();
+            ob.main(null);
         }
         );
         // Change back button style

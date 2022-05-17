@@ -11,7 +11,8 @@ import java.sql.Statement;
 
 public class ViewProfileDetails
 {
-    public ViewProfileDetails() {
+    public ViewProfileDetails()
+    {
         JFrame f = new JFrame("User Profile");
         // Set the background color of the frame to #66FF99
         f.getContentPane().setBackground(new Color(102, 255, 153));

@@ -15,27 +15,26 @@ public class GetDetails
     {
         // Create a new frame
         JFrame f =new JFrame("Choose your subscription");
-        f.getContentPane().setBackground(new Color(230,230,0));
+        // Set the background color to #6C02DE
+        f.getContentPane().setBackground(new Color(108, 2, 222));
         f.setBackground(Color.cyan);
 
         String userName= Login.getUserName();
 ;
-        // Create a new Label for the Title
-        JLabel title = new JLabel("Choose your subscription",JLabel.CENTER);
-        title.setBounds(500,50,400,80);
-        title.setFont(new Font("Comic Sans MS", Font.BOLD, 30));
-        title.setForeground(Color.BLUE);
-        f.add(title);
+        // Create a panel on the top of the frame that contains a text label with  UserPortal
+        JPanel topPanel = new JPanel();
+        topPanel.setBounds(0, 0, 1600, 50);
+        // Set the background color of the panel to #00308f
+        topPanel.setBackground(new Color(132,222,2));
+        JLabel topLabel = new JLabel("Subscription Model");
+        // Set the font colour of User Portal to white
+        topLabel.setForeground(Color.white);
+        topLabel.setFont(new Font("Serif", Font.BOLD, 24));
+        topPanel.add(topLabel);
+        f.add(topPanel);
 
         JLabel name,charge,startdate,cardnumber,expiry,cvv;
         JTextField chargeField,dateField,nameoncard_field,cardnumber_field,expiry_field,cvv_field;
-
-        //Create a  JLabel with text "Personal Information"
-        name = new JLabel("Subscription Model :");
-        name.setBounds(400,175,400,50);
-        name.setFont(new Font("Calibri", Font.ITALIC, 24));
-        name.setForeground(Color.BLACK);
-        f.add(name);
 
         // Option List for the Gender
         String[] subscription_options =

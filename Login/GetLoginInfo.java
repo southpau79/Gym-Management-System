@@ -14,7 +14,7 @@ public class GetLoginInfo
         new GetLoginInfo();
     }
 
-    static int calculatePasswordStrength(@NotNull String password, JProgressBar progressBar) {
+    public static int calculatePasswordStrength(@NotNull String password, JProgressBar progressBar) {
 
     //total score of password
     int iPasswordScore = 0;
@@ -356,9 +356,10 @@ public class GetLoginInfo
                     pst.executeUpdate();
                     JOptionPane.showMessageDialog(Register, "Your Login Details are stored...");
                     connection.close();
-
                     // Calling The NewRegisterForm if it exists
-                    // GetBasicDetails obj = new GetBasicDetails();
+                    GetBasicDetails obj = new GetBasicDetails();
+                    f.dispose();
+                    obj.main(null);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -387,10 +388,11 @@ public class GetLoginInfo
         JButton back = new JButton("Back");
         back.setBounds(320,390,100,30);
         // To move to previous page
-        back.addActionListener(e -> {
+        back.addActionListener(e ->
+                {
                     f.dispose();
-                    new Login();
-                    Login.main(null);
+                    Login obj = new Login();
+                    obj.main(null);
                 }
         );
         // Change back button style

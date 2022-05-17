@@ -75,7 +75,7 @@
         <jarDirectory url="file://$USER_HOME$/OneDrive/Documents/iText7-Core-7.1.3" recursive="false" type="SOURCES" />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/JAR files/core-3.3.0.jar!/" />
@@ -84,7 +84,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/JAR files/javase-3.3.0.jar!/" />

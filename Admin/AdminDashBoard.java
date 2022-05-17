@@ -1,5 +1,7 @@
-package Instructor;
+package Admin;
 
+import Instructor.InstructorDashBoard;
+import Instructor.ViewProfileDetails;
 import Login.Login;
 import WorkOut.WorkoutPlan;
 
@@ -10,12 +12,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-
-public class InstructorDashBoard
+public class AdminDashBoard
 {
-    public InstructorDashBoard()
+    public AdminDashBoard()
     {
-        JFrame f = new JFrame("Instructor Dashboard");
+        JFrame f = new JFrame("Admin Dashboard");
         f.getContentPane().setBackground(new Color(213, 216, 28));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setSize(1600, 800);
@@ -27,7 +28,7 @@ public class InstructorDashBoard
         topPanel.setBounds(0, 0, 1600, 50);
         // Set the background color of the panel to #00308f
         topPanel.setBackground(new Color(80, 48, 143));
-        JLabel topLabel = new JLabel("Instructor Portal");
+        JLabel topLabel = new JLabel("Admin Portal");
         // Set the font colour of User Portal to white
         topLabel.setForeground(Color.white);
         topLabel.setFont(new Font("Serif", Font.BOLD, 24));
@@ -219,10 +220,7 @@ public class InstructorDashBoard
         return name;
     }
 
-
-
     public static void main(String[] args) {
-        new InstructorDashBoard();
+        new AdminDashBoard();
     }
-
 }

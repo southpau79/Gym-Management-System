@@ -1,4 +1,4 @@
-package DashBoard;
+package Member;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,6 +40,13 @@ public class UserDashBoard
         viewWorkOutButton.setFont(new Font("Serif", Font.BOLD, 18));
         // Add white border to the button
         viewWorkOutButton.setBorder(BorderFactory.createLineBorder(Color.black));
+        viewWorkOutButton.addActionListener(e ->
+        {
+            // Close the frame
+            f.dispose();
+            ViewWorkutDetails ob = new ViewWorkutDetails();
+            ob.main(null);
+        });
         f.add(viewWorkOutButton);
 
         // Create a button on the left of the frame that contains a text label with  View Membership Status without panel

@@ -1,4 +1,4 @@
-package DashBoard;
+package Member;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.Connection;
